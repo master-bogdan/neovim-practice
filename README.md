@@ -1,6 +1,6 @@
 # Neovim LazyVim Practice Class
 
-Use this folder as a practical LazyVim training workbook. It is written for stock LazyVim first, with notes to verify mappings through which-key when your local config differs.
+Use this folder as a practical LazyVim training workbook. Every chapter lists the exact keybindings to use — no guessing. All mappings reflect the specific plugins and extras listed below.
 
 Sources used:
 - LazyVim keymaps: https://www.lazyvim.org/keymaps
@@ -24,34 +24,73 @@ Daily minimum:
 - 10 minutes: one real-world drill
 
 Weekly rotation:
-- Day 1: motions, operators, text objects
-- Day 2: search, replace, pickers
-- Day 3: files, buffers, windows, tabs
-- Day 4: LSP, diagnostics, formatting
-- Day 5: git and terminal workflow
-- Day 6: customization and AI
-- Day 7: full workflow drills
+- Day 1: motions + operators + surround + yank ring (ch 1, 2)
+- Day 2: search, replace, pickers, files, buffers (ch 3, 4)
+- Day 3: Neo-tree, terminal, LSP, diagnostics, formatting (ch 5, 6)
+- Day 4: git — LazyGit, DiffView, hunks, blame (ch 7)
+- Day 5: AI — CopilotChat custom prompts (ch 9)
+- Day 6: outline + refactoring + GitHub/Octo (ch 10, 12)
+- Day 7: full workflow drills (ch 11)
 
 ## Chapters
 
 1. `01-modal-editing-and-motions.md` - modes, cursor movement, word movement, line movement, Flash
-2. `02-editing-operators-and-text-objects.md` - operators, yanks, deletes, changes, registers, text objects, visual mode
+2. `02-editing-operators-and-text-objects.md` - operators, registers, text objects, visual mode, mini-surround, yanky
 3. `03-search-replace-and-navigation.md` - search, substitute, project search, quickfix, location list, jumps
 4. `04-files-buffers-windows-tabs.md` - pickers, buffers, splits, tabs, sessions
-5. `05-explorer-terminal-and-scratch.md` - explorer, terminal, scratch buffers, new files
+5. `05-explorer-terminal-and-scratch.md` - Neo-tree (full internal keys), terminal, scratch buffers
 6. `06-lsp-diagnostics-formatting.md` - definitions, references, hover, rename, code actions, diagnostics, formatting
-7. `07-git-workflows.md` - git status, hunks, blame, file history, GitHub helpers
+7. `07-git-workflows.md` - LazyGit, DiffView, gitsigns hunks, blame, file history
 8. `08-lazyvim-customization-and-which-key.md` - which-key, Lazy, extras, keymap discovery, config habits
-9. `09-ai-workflows.md` - AI extras, chat, edit, context, diff review, prompt discipline
-10. `10-testing-debugging-and-language-extras.md` - tests, debug, language extras, database and preview extras
-11. `11-full-workflow-drills.md` - combined realistic drills
+9. `09-ai-workflows.md` - CopilotChat with custom prompts: Explain, Review, Fix, Tests, Commit, Optimize
+10. `10-outline-and-refactoring.md` - code outline sidebar, extract function/variable, inline, rename
+11. `11-full-workflow-drills.md` - combined realistic drills across all tools
+12. `12-octo-github-workflows.md` - GitHub PRs and issues as buffers, inline review, approve, comment
 
-## Stock LazyVim Assumptions
+## Config Assumptions
 
 - `<leader>` is `<space>`.
 - `<localleader>` is `\`.
-- Current LazyVim uses Snacks for many picker, explorer, terminal, and scratch workflows.
-- Some chapters mention extras such as AI, testing, debug, SQL, Markdown preview, or GitHub integration. These depend on enabled LazyVim extras and installed tools.
+
+Active LazyVim extras this workbook is written for:
+
+| Extra | What it adds |
+|---|---|
+| `ai.copilot-native` | GitHub Copilot inline suggestions |
+| `ai.copilot-chat` | CopilotChat with custom prompts (Explain, Review, Fix, Tests, Commit, Optimize) |
+| `coding.mini-surround` | Add/delete/replace surrounds: `gsa`, `gsd`, `gsr` |
+| `coding.yanky` | Yank ring: `<C-p>`/`<C-n>` after paste, `<leader>p` history picker |
+| `editor.mini-diff` | Inline diff signs and `<leader>go` overlay |
+| `editor.neo-tree` | File explorer with `<leader>e`, full internal keys |
+| `editor.outline` | Code outline sidebar with `<leader>cs` |
+| `editor.refactoring` | Extract function/variable, inline: `<leader>re`, `<leader>rv`, `<leader>ri` |
+| `formatting.prettier` | Prettier via `<leader>cf` on JS/TS/JSON/YAML/Markdown |
+| `lang.git` | Git extras: LazyGit, lang-level git support |
+| `lang.go` | gopls, gofmt, staticcheck |
+| `lang.typescript` | vtsls with inlay hints |
+| `lang.python` | pyright |
+| `lang.markdown` | marksman, markdownlint |
+| `linting.eslint` | ESLint diagnostics |
+| `ui.edgy` | Structured sidebar layout |
+| `ui.treesitter-context` | Sticky context header |
+| `util.octo` | GitHub PRs and issues as buffers |
+| `util.project` | Project picker |
+
+Custom keymaps beyond LazyVim defaults:
+
+| Key | Action |
+|---|---|
+| `<leader>gg` | LazyGit |
+| `<leader>gv` | Toggle DiffView |
+| `<leader>gH` | DiffView file history |
+| `<leader>ae` | CopilotChat: Explain |
+| `<leader>ar` | CopilotChat: Review |
+| `<leader>af` | CopilotChat: Fix diagnostic |
+| `<leader>at` | CopilotChat: Generate tests |
+| `<leader>ac` | CopilotChat: Commit message |
+| `<leader>ao` | CopilotChat: Optimize |
+| `<leader>md` | Markdown preview toggle |
+| `<leader>um` | Toggle minimap |
 
 ## Verification Commands
 

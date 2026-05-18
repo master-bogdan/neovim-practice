@@ -21,36 +21,38 @@ Operators say what to do. Motions and text objects say what to do it to.
 Operators and edits:
 - `x` - delete character under cursor
 - `X` - delete character before cursor
-- `r<char>` - replace one character
+- `r<char>` - replace one character in place, stay in Normal mode
 - `d{motion}` - delete by motion
-- `c{motion}` - change by motion
+- `c{motion}` - change by motion (deletes then enters Insert mode)
 - `y{motion}` - yank by motion
-- `D` - delete to end of line
-- `C` - change to end of line
+- `D` - delete from cursor to end of line
+- `C` - change from cursor to end of line
 - `dd` - delete current line
 - `cc` - change current line
 - `yy` - yank current line
-- `p` - paste after or below
-- `P` - paste before or above
+- `p` - paste after cursor / below current line
+- `P` - paste before cursor / above current line
 - `u` - undo
 - `<C-r>` - redo
 - `.` - repeat last change
 
 Registers:
-- `"` - register prefix
+- `"` - register prefix (type before `y`, `d`, `c`, `p`)
 - `"ayy` - yank current line into register `a`
 - `"ap` - paste from register `a`
-- `"_d{motion}` - delete into black hole register
-- `"+y` - yank to system clipboard when clipboard integration is available
-- `:registers` - inspect registers
+- `"_d{motion}` - delete into black hole register (does not overwrite yank)
+- `"+y{motion}` - yank to system clipboard
+- `:registers` - inspect all registers
 
-Text objects:
-- `iw` - inner word
-- `aw` - a word including spacing
+Text objects (combine with operators: `d`, `c`, `y`, `v`):
+- `iw` - inner word (no surrounding whitespace)
+- `aw` - a word including trailing whitespace
 - `i"` - inside double quotes
-- `a"` - around double quotes
+- `a"` - around double quotes including the quotes
 - `i'` - inside single quotes
-- `a'` - around single quotes
+- `a'` - around single quotes including the quotes
+- `` i` `` - inside backticks
+- `` a` `` - around backticks including the backticks
 - `i(` / `a(` - inside / around parentheses
 - `i[` / `a[` - inside / around brackets
 - `i{` / `a{` - inside / around braces
@@ -60,34 +62,86 @@ Visual mode:
 - `v` - characterwise visual
 - `V` - linewise visual
 - `<C-v>` - blockwise visual
-- `>` - indent selection
+- `>` - indent selection (stay in Visual with `gv` to repeat)
 - `<` - unindent selection
 - `gv` - reselect previous visual selection
+
+mini-surround (adds/changes/removes surrounding pairs):
+- `gsa{motion}{char}` - add surround around motion (e.g. `gsaiw"` surrounds word with `"`)
+- `gsd{char}` - delete surround (e.g. `gsd"` removes surrounding `"`)
+- `gsr{old}{new}` - replace surround (e.g. `gsr"'` changes `"` to `'`)
+- `gsf{char}` - find next surrounding character to the right
+- `gsF{char}` - find next surrounding character to the left
+- `gsh{char}` - highlight surrounding character
+
+yanky (yank ring — navigate paste history after `p` or `P`):
+- `p` - paste (same as default, but yanky tracks history)
+- `P` - paste before (same as default)
+- `<C-p>` - after pasting, cycle to previous yank in ring
+- `<C-n>` - after pasting, cycle to next yank in ring
+- `<leader>p` - open yank history picker
 
 ## Common Workflows
 
 Change a word:
 
 ```text
-Put cursor anywhere in the word, press ciw, type replacement, press Esc.
+Put cursor anywhere in the word
+ciw
+Type replacement
+<Esc>
 ```
 
 Change a string:
 
 ```text
-Put cursor inside quotes, press ci", type replacement, press Esc.
+Put cursor anywhere inside the quotes
+ci"
+Type replacement
+<Esc>
+```
+
+Surround a word with quotes:
+
+```text
+Put cursor anywhere in the word
+gsaiw"
+```
+
+Remove surrounding parentheses:
+
+```text
+Put cursor anywhere inside ( )
+gsd(
+```
+
+Change surrounding quotes from double to single:
+
+```text
+Put cursor inside "text"
+gsr"'
 ```
 
 Preserve your yank while deleting:
 
 ```text
-Yank the important text, then use "_d... for disposable deletes.
+Yank the important text first with yy or y{motion}
+Then use "_d{motion} for disposable deletes
+```
+
+Paste previous yank if you accidentally overwrote:
+
+```text
+p
+<C-p>   <- cycles back through yank ring
 ```
 
 Repeat a structured edit:
 
 ```text
-Make one edit, move to the next similar target, press .
+Make one edit
+Move to the next similar target
+.
 ```
 
 ## Practice Scenarios
@@ -104,7 +158,13 @@ const mode = "archove"
 const level = "warnong"
 ```
 
-Required move: put the cursor on the wrong character, then use `r<char>`.
+Step-by-step:
+1. Put cursor on `o` in `pendong` — press `f` then `o` to jump: `fo`
+2. Press `r` then `i` to replace: `ri`
+3. Move to next line: `j`
+4. Press `fo` to jump to `o` in `archove`, then `ri`
+5. Move to next line: `j`
+6. Press `fo` to jump to `o` in `warnong`, then `ri`
 
 Expected result:
 
@@ -126,7 +186,11 @@ const previous_status = payload.previous_status
 const final_status = payload.final_status
 ```
 
-Required move: land on `status`, then use `cw` or `ciw`.
+Step-by-step:
+1. Put cursor on `status` in `request_status` (left side): `fst` or `/request_status<CR>`
+2. Press `cw` to change forward word, type `state`, press `<Esc>`
+3. Move to next line `j`, find `status` on left side, repeat with `.`
+4. Repeat for third line
 
 Expected result:
 
@@ -138,7 +202,7 @@ const final_state = payload.final_status
 
 ### Scenario 3 - Remove Debug Entries From A Mixed List
 
-Remove only debug-related entries and leave valid punctuation.
+Remove only debug-related entries and leave valid punctuation intact.
 
 Practice area:
 
@@ -147,7 +211,12 @@ const enabledFeatures = ["sync", "debug_mode", "history"]
 const enabledJobs = ["fetch", "debug_fetch", "publish", "debug_publish"]
 ```
 
-Required move: put the cursor inside `debug_mode`, then use a text object and one cleanup edit if needed.
+Step-by-step:
+1. Put cursor inside `"debug_mode"`: `/debug_mode<CR>`
+2. Press `di"` to delete inside quotes, then `X` to remove the comma before it, then `x` if a comma follows
+3. Or select including comma: press `v`, select `, "debug_mode"`, press `d`
+4. For the second line, find `"debug_fetch"`: `/debug_fetch<CR>`, select `, "debug_fetch"` with `v` then `f"`, press `d`
+5. Repeat for `"debug_publish"` with `, "debug_publish"`: `v`, `f"`, `d`
 
 Expected result:
 
@@ -168,7 +237,13 @@ logger.info('room created', { roomId: 42, source: 'cron' })
 const markdown = `room created`
 ```
 
-Required move: use `ci"`, `ci'`, and the closest useful text object for backticks.
+Step-by-step:
+1. Put cursor inside `"room created"` on line 1: `/room created<CR>`
+2. Press `ci"`, type `sync queued`, press `<Esc>`
+3. Move to line 2, put cursor inside `'room created'`: `j/room<CR>`
+4. Press `ci'`, type `sync queued`, press `<Esc>`
+5. Move to line 3, put cursor inside `` `room created` ``: `j`
+6. Press `` ci` ``, type `sync queued`, press `<Esc>`
 
 Expected result:
 
@@ -190,7 +265,13 @@ queueVariableSync(roomId, variableName, userId, retryCount)
 trackAuditEvent("variable_sync", roomId, userId)
 ```
 
-Required move: put the cursor inside the call arguments, then use `ci(`.
+Step-by-step:
+1. Put cursor inside the first call's arguments: `/publishVariable<CR>`, then `f(`
+2. Press `ci(`, type `payload`, press `<Esc>`
+3. Move to next line: `j`
+4. Press `f(`, then `ci(`, type `syncJob`, press `<Esc>`
+5. Move to next line: `j`
+6. Press `f(`, then `ci(`, type `auditEvent`, press `<Esc>`
 
 Expected result:
 
@@ -202,7 +283,7 @@ trackAuditEvent(auditEvent)
 
 ### Scenario 6 - Edit A Markdown Checklist
 
-Complete the first item, remove the obsolete item, and change the final item from code-only practice to mixed practice.
+Complete the first item, remove the obsolete item, and change the final item.
 
 Practice area:
 
@@ -212,7 +293,13 @@ Practice area:
 - [ ] Practice only code examples
 ```
 
-Required moves: use `r`, `dd`, and a word or text-object change such as `cw` or `ciw`.
+Step-by-step:
+1. Put cursor on the space inside `[ ]` on line 1: `f<space>` after `[`
+2. Press `r` then `x` to mark complete: `rx`
+3. Move to line 2: `j`
+4. Delete the entire line: `dd`
+5. Now on line 3, put cursor on `only`: `f o` or `/only<CR>`
+6. Press `cw`, type `mixed`, press `<Esc>`
 
 Expected result:
 
@@ -223,7 +310,7 @@ Expected result:
 
 ### Scenario 7 - Preserve A Yank While Deleting Junk
 
-You need to copy the clean config line, remove temporary lines, and paste the clean line below the target.
+Copy the clean config line, remove temporary lines, paste the clean line below the target.
 
 Practice area:
 
@@ -234,7 +321,13 @@ TEMP_LOG_LEVEL=trace
 COPY_TARGET_HERE=
 ```
 
-Required moves: `yy`, `"_dd`, `"_dd`, then `p`.
+Step-by-step:
+1. Put cursor on `OBJECT_SCHEMA_SYNC=true`: `gg`
+2. Yank the line: `yy`
+3. Move to `temporary_debug_flag`: `j`
+4. Delete into black hole (does not replace yank): `"_dd`
+5. Delete `TEMP_LOG_LEVEL`: `"_dd`
+6. Now on `COPY_TARGET_HERE=`, paste below: `p`
 
 Expected result:
 
@@ -246,7 +339,7 @@ OBJECT_SCHEMA_SYNC=true
 
 ### Scenario 8 - Align Repeated Lines With Visual Block Mode
 
-Three code lines and one prose line need the same comment prefix. Add it with one block edit instead of separate inserts.
+Add `// ` prefix to all four lines at once using one block insert.
 
 Practice area:
 
@@ -257,7 +350,13 @@ await publishEvent()
 manual check before deploy
 ```
 
-Required moves: `<C-v>`, select the first column of all four lines, `I`, type `// `, then `<Esc>`.
+Step-by-step:
+1. Put cursor on column 1 of `await syncVariables()`: `gg0`
+2. Enter blockwise visual: `<C-v>`
+3. Select down 3 lines to cover all four: `3j`
+4. Go to Insert mode at the block start: `I`
+5. Type `// ` (slash slash space)
+6. Press `<Esc>` — the prefix appears on all lines
 
 Expected result:
 
@@ -270,7 +369,7 @@ Expected result:
 
 ### Scenario 9 - Repeat A Structured Change
 
-Every quoted status changed from `draft` to `queued`. Do the first edit completely, then repeat the change for the remaining lines.
+Every quoted status changes from `draft` to `queued`. Do the first edit, then repeat.
 
 Practice area:
 
@@ -281,7 +380,12 @@ setStatus("draft")
 assertStatus("draft")
 ```
 
-Required moves: use `ci"` once, then move to the next strings and use `.`.
+Step-by-step:
+1. Put cursor inside the first `"draft"`: `f"`
+2. Press `ci"`, type `queued`, press `<Esc>`
+3. Move to next `"draft"`: `j` then `f"`
+4. Press `.` to repeat
+5. Repeat `j`, `f"`, `.` for remaining lines
 
 Expected result:
 
@@ -292,38 +396,69 @@ setStatus("queued")
 assertStatus("queued")
 ```
 
-### Scenario 10 - Use Text Objects In Prose
+### Scenario 10 - Surround And Unwrap With mini-surround
 
-Clean up this paragraph without selecting with the mouse.
+Practice adding and removing surrounds without manual selection.
 
 Practice area:
 
-```text
-The editor should feel "slow and careful" at first. Practice becomes deliberate (not frantic) when each edit has a clear target.
+```ts
+const label = hello
+const wrapped = (already wrapped text)
+const quoted = 'change these to double'
 ```
 
-Required moves: change inside quotes with `ci"`, change `deliberate` with `ciw`, and remove the parenthetical note with `da(`.
+Step-by-step:
+1. Put cursor on `hello`: `fh`
+2. Surround the word with double quotes: `gsaiw"`
+3. Move to line 2, put cursor inside `(already wrapped text)`: `j`
+4. Remove the parentheses: `gsd(`
+5. Move to line 3, put cursor inside `'change these to double'`: `j`
+6. Change single quotes to double: `gsr'"`
 
 Expected result:
 
-```text
-The editor should feel "precise" at first. Practice becomes automatic when each edit has a clear target.
+```ts
+const label = "hello"
+const wrapped = already wrapped text
+const quoted = "change these to double"
 ```
+
+### Scenario 11 - Navigate Yank History With yanky
+
+Practice recovering a previous yank after it was overwritten.
+
+Step-by-step:
+1. Yank line 1: `yy`
+2. Move to line 2: `j`
+3. Yank line 2 (overwrites the ring slot): `yy`
+4. Move to a blank line below
+5. Paste most recent yank: `p`
+6. Cycle back to the previous yank (line 1): `<C-p>`
+7. Open the full yank history picker: `<leader>p`
+
+Expected result: you can recover any previously yanked text, not just the last one.
 
 ## Real-World Drill
 
-Open a code file and do this:
+Open a code file and do this sequence without looking anything up:
 
 1. Change one string with `ci"`.
-2. Change one function argument with `ci(` or a smaller object.
-3. Yank one line into register `a` with `"ayy`.
-4. Delete a temporary word using `"_dw`.
-5. Paste register `a` elsewhere with `"ap`.
-6. Undo with `u`, then redo with `<C-r>`.
+2. Change one function argument with `ci(`.
+3. Surround a bare word with backticks using `gsaiw`` ` `` `.
+4. Remove surrounding parentheses from an expression with `gsd(`.
+5. Yank one line into register `a` with `"ayy`.
+6. Delete a temporary word into the black hole register with `"_dw`.
+7. Paste register `a` elsewhere with `"ap`.
+8. Make an edit, move to a similar target, press `.`.
+9. Undo with `u`, then redo with `<C-r>`.
+10. Open yank history with `<leader>p` and inspect what is there.
 
 ## Troubleshooting / Verify With Which-Key
 
 - `:registers` shows what was yanked or deleted.
 - If system clipboard does not work, check `:checkhealth clipboard`.
-- If a text object feels surprising, inspect whether the cursor is inside or outside the object.
-- Use `<leader>s"` in stock LazyVim to open a register picker when available.
+- If a text object feels surprising, check whether the cursor is inside or outside the object.
+- If `gsa`/`gsd`/`gsr` do nothing, verify `mini-surround` extra is enabled with `:LazyExtras`.
+- If `<C-p>`/`<C-n>` after paste does nothing, verify `yanky` extra is enabled with `:LazyExtras`.
+- Search `<leader>sk` for `surround` or `yank` to verify mappings.

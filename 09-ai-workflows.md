@@ -1,17 +1,17 @@
-# Chapter 9 - AI Workflows
+# Chapter 9 - AI Workflows With CopilotChat
 
 ## Goal
 
-Use AI integrations as editor tools: gather context, ask focused questions, review diffs, and apply changes deliberately.
+Use CopilotChat as an editor tool: ask focused questions, review code, generate tests, fix diagnostics, and write commit messages — all from the editor with deliberate context control.
 
 ## Mental Model
 
-AI is most useful when the context is explicit and the request is narrow. Use LazyVim to select files, buffers, visual ranges, diagnostics, and git diffs, then ask the model for one concrete output.
+CopilotChat is most useful when the context is explicit and the request is narrow. You control what context the model sees by selecting code visually or using buffer/file context. Broad requests produce broad answers. Narrow requests with real code selections produce actionable outputs.
 
 Good request:
 
 ```text
-Review this function for a race condition. Do not rewrite it. Return findings with file/line references.
+Review this function for a race condition. Do not rewrite it. Return findings with line references.
 ```
 
 Weak request:
@@ -20,152 +20,239 @@ Weak request:
 Improve this code.
 ```
 
+Your config has these custom prompts pre-defined — use them by name:
+- **Explain** — explains behavior, data flow, and tradeoffs
+- **Review** — checks for bugs, regressions, missing tests, and maintainability issues
+- **Fix** — fixes the current diagnostic with explanation
+- **Tests** — generates tests covering happy path, edge cases, and error handling
+- **Commit** — writes a conventional commit message from staged diff
+- **Optimize** — optimizes for performance and readability with explanation of impact
+
 ## Keymaps
 
-AI mappings depend on enabled LazyVim extras and installed plugins.
+CopilotChat:
+- `<leader>aa` - toggle CopilotChat window
+- `<leader>ax` - clear CopilotChat context and history
+- `<leader>aq` - quick chat (inline prompt without opening full window)
 
-Avante extra examples:
-- `<leader>aa` - ask Avante
-- `<leader>ac` - chat with Avante
-- `<leader>ae` - edit with Avante
-- `<leader>af` - focus Avante
-- `<leader>ah` - Avante history
-- `<leader>am` - select model
-- `<leader>an` - new Avante chat
-- `<leader>ap` - switch provider
-- `<leader>ar` - refresh
-- `<leader>as` - stop
-- `<leader>at` - toggle Avante
+Custom prompts (works on visual selection or current buffer):
+- `<leader>ae` - Explain selected code
+- `<leader>ar` - Review selected code
+- `<leader>af` - Fix current diagnostic
+- `<leader>at` - Generate tests for selected code
+- `<leader>ac` - Generate commit message from staged changes
+- `<leader>ao` - Optimize selected code
 
-CopilotChat extra examples:
-- `<leader>aa` - toggle CopilotChat
-- `<leader>ap` - prompt actions
-- `<leader>aq` - quick chat
-- `<leader>ax` - clear
+Inside CopilotChat window:
 - `<C-s>` - submit prompt
+- `<Esc>` - close the chat window
+- `q` - close the chat window
+- `<CR>` - submit prompt (in insert mode inside chat)
 
-Claude Code / Sidekick-style extras can reuse `<leader>a` groups, so always verify locally:
-- `<leader>a` - AI group when enabled
-- `<leader>sk` then search `Avante`, `Copilot`, `Claude`, `Sidekick`, or `AI`
-- `:LazyExtras` to inspect enabled AI extras
+Context control before asking:
+- Select code in Visual mode first, then press a `<leader>a` mapping — the selection becomes context
+- Without a selection, the current buffer is used as context
+- `gr` or `<leader>sg` to gather references before asking about cross-file behavior
 
 ## Common Workflows
 
-Ask about selected code:
+Explain a function:
 
 ```text
-Select a function in Visual mode
-open AI action
-ask for a focused review or explanation
+Put cursor inside the function
+V                     select the function with linewise visual
+<leader>ae            runs Explain prompt with selection as context
+Read the output
 ```
 
-Edit with guardrails:
+Review for correctness:
 
 ```text
-Ask for a minimal patch
-review the diff
-run tests or typecheck
-keep or revert deliberately
+Select the suspicious function in Visual mode
+<leader>ar            runs Review prompt
+Read findings
+Apply one fix at a time manually
 ```
 
-Use AI for navigation:
+Fix a diagnostic:
 
 ```text
-Ask where a behavior is implemented after giving filenames and search results.
+Navigate to the diagnostic line with ]d or [d
+<leader>af            runs Fix prompt with context around the diagnostic
+Review the suggested fix
+Apply manually if it looks right
 ```
 
-Use AI for refactoring:
+Generate tests:
 
 ```text
-Ask for a plan first when the change crosses module boundaries.
-Ask for code changes only after the plan is clear.
+Select the function to test
+<leader>at            runs Tests prompt
+Review generated tests
+Paste them into the test file manually
+```
+
+Write a commit message:
+
+```text
+Stage your changes in terminal or LazyGit first
+<leader>ac            runs Commit prompt with git:staged context
+Review the message
+Copy and use in your commit
+```
+
+Optimize code:
+
+```text
+Select the code to optimize
+<leader>ao            runs Optimize prompt
+Read the explanation of the proposed change
+Apply if the tradeoff is clear
 ```
 
 ## Practice Scenarios
 
-### Scenario 1
+### Scenario 1 - Open And Close CopilotChat
 
-Open `<leader>sk` and search for `AI`.
+1. Press `<leader>aa` to open CopilotChat.
+2. Type a test message in the input.
+3. Press `<C-s>` to submit.
+4. Press `<leader>aa` again to close.
 
-Expected result: you know which AI mappings are actually installed.
+Expected result: CopilotChat opens, responds, and closes cleanly.
 
-### Scenario 2
+### Scenario 2 - Explain Selected Code
 
-Run `:LazyExtras` and inspect AI extras.
+Practice area:
 
-Expected result: you can tell whether Avante, CopilotChat, Claude, or another AI extra is enabled.
-
-### Scenario 3
-
-Select a small function and ask AI to explain it.
-
-Prompt:
-
-```text
-Explain this function in five bullets. Include inputs, outputs, side effects, and one risk.
+```ts
+function debounce<T extends (...args: unknown[]) => void>(fn: T, delay: number): T {
+  let timer: ReturnType<typeof setTimeout>
+  return function (...args: Parameters<T>) {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  } as T
+}
 ```
 
-Expected result: explanation is grounded in selected code.
+Step-by-step:
+1. Put cursor on the first line of the function above.
+2. Press `V` to enter linewise visual.
+3. Press `6j` to select all 7 lines.
+4. Press `<leader>ae` to run Explain.
+5. Read the output — it should cover behavior, data flow, and the timer tradeoff.
 
-### Scenario 4
+Expected result: explanation is grounded in the selected code, not generic.
 
-Ask AI for a code review, not a rewrite.
+### Scenario 3 - Review For Correctness Only
 
-Prompt:
+Practice area:
 
-```text
-Review the selected code for correctness bugs only. Return findings first. Do not edit.
+```ts
+async function fetchUserData(userId: string) {
+  const cache = global.userCache
+  if (cache[userId]) return cache[userId]
+  const data = await db.query(`SELECT * FROM users WHERE id = ${userId}`)
+  cache[userId] = data
+  return data
+}
 ```
 
-Expected result: response is focused on risks.
+Step-by-step:
+1. Select all lines of the function above with `V` then `5j`.
+2. Press `<leader>ar` to run Review.
+3. Read findings — expect it to flag the SQL injection and missing cache invalidation.
+4. Do not apply any changes yet. Read only.
 
-### Scenario 5
+Expected result: review identifies real bugs, not style issues.
 
-Ask AI for a minimal edit.
+### Scenario 4 - Fix A Diagnostic
 
-Prompt:
+Prerequisites: have a file open with at least one LSP diagnostic (red underline).
 
-```text
-Make the smallest change that fixes this diagnostic. Do not rename unrelated symbols.
+Step-by-step:
+1. Navigate to a diagnostic line with `]d`.
+2. Press `<leader>cd` to read the diagnostic message first.
+3. Press `<leader>af` to run Fix with the diagnostic as context.
+4. Read the suggested fix.
+5. Apply the fix manually — do not let the AI edit the file directly unless you understand the change.
+
+Expected result: diagnostic is resolved or you understand why the suggested fix works.
+
+### Scenario 5 - Generate Tests
+
+Practice area:
+
+```ts
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max)
+}
 ```
 
-Expected result: generated edit is narrow enough to review.
+Step-by-step:
+1. Select the function with `V` then `2j`.
+2. Press `<leader>at` to run Tests.
+3. Read the generated tests — expect happy path, boundary values (value === min, value === max), and below/above range.
+4. Copy the tests manually into a test file.
 
-### Scenario 6
+Expected result: tests cover the behavior you selected, not a generic template.
 
-Ask AI to write a test case for selected behavior.
+### Scenario 6 - Generate A Commit Message
 
-Prompt:
+Prerequisites: have staged changes in your git repository.
 
-```text
-Write one focused test for this branch. Match the existing test style.
+Step-by-step:
+1. Stage your changes in terminal (`git add`) or in LazyGit (`<leader>gg`, `<Space>`).
+2. Press `<leader>ac` to run Commit.
+3. Read the generated conventional commit message.
+4. Copy it into your commit command in the terminal.
+
+Expected result: message follows conventional commit format and describes your actual staged changes.
+
+### Scenario 7 - Optimize Selected Code
+
+Practice area:
+
+```ts
+function findDuplicates(arr: number[]): number[] {
+  const duplicates: number[] = []
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[i] === arr[j] && !duplicates.includes(arr[i])) {
+        duplicates.push(arr[i])
+      }
+    }
+  }
+  return duplicates
+}
 ```
 
-Expected result: test proposal follows nearby patterns.
+Step-by-step:
+1. Select all lines of the function with `V` then `8j`.
+2. Press `<leader>ao` to run Optimize.
+3. Read the explanation of the performance tradeoff (O(n²) → O(n) with a Set).
+4. Decide whether to apply — check if the tradeoff matches your constraints.
 
-### Scenario 7
-
-Ask AI to summarize a git diff.
-
-Practice area: use a changed file or staged diff if your AI integration supports context from buffers or terminal output.
-
-Expected result: summary separates behavior change from refactor.
+Expected result: optimization comes with an explanation, not just a code replacement.
 
 ## Real-World Drill
 
-1. Open a changed source file.
-2. Use LSP `gr` or project grep to gather related context.
-3. Select the relevant function.
-4. Ask AI for a correctness review only.
-5. Apply one small suggested fix manually or through the AI tool.
-6. Review the diff.
-7. Run the nearest validation command.
-8. Ask AI to write a concise commit message from the final diff.
+Do this sequence on a real source file:
+
+1. Open a changed file with `<leader><space>`.
+2. Use `gd` to jump to a definition, return with `<C-o>`.
+3. Use `gr` to find references to a symbol.
+4. Select the most important function with `V` and `j` movements.
+5. Press `<leader>ar` to review it for correctness.
+6. Apply one small fix manually from the findings.
+7. Press `<leader>ac` to generate a commit message (stage changes first).
+8. Review the message and use it in your commit.
 
 ## Troubleshooting / Verify With Which-Key
 
-- AI mappings overlap by plugin. Verify with `<leader>sk`.
-- If `<leader>a` does nothing, enable an AI extra with `:LazyExtras` or install/configure the plugin.
-- If output is too broad, narrow the prompt and provide exact constraints.
-- If AI edits too many files, stop and ask for a plan or patch-only output.
-- Treat AI output as a draft. Use tests, LSP diagnostics, and git diff before trusting it.
+- If `<leader>aa` does nothing, check `:Lazy` for `CopilotChat`.
+- If custom prompts (`<leader>ae`, `<leader>ar`, etc.) are missing, check `lua/plugins/ai.lua`.
+- If Copilot is not authenticated, run `:Copilot auth` and follow the device login flow.
+- Search `<leader>sk` for `Copilot` or `Chat` to verify all mappings are registered.
+- If output is too broad, narrow the visual selection and re-run.
+- Treat all AI output as a draft — verify with LSP diagnostics and read the diff before applying.

@@ -2,171 +2,243 @@
 
 ## Goal
 
-Combine editing, navigation, LSP, git, terminal, and AI into realistic developer workflows.
+Combine editing, navigation, LSP, git, terminal, AI, and refactoring into realistic developer workflows.
 
 ## Mental Model
 
-A real editor session is not one command family. You move between reading, editing, searching, validating, and reviewing. These drills train transitions.
+A real editor session is not one command family. You move between reading, editing, searching, validating, and reviewing. These drills train transitions between all the tools you have available.
 
-## Keymaps
+## Keymaps Reference
 
-This chapter reuses:
-- Motions: `w`, `b`, `e`, `f`, `t`, `gg`, `G`, `s`
+This chapter reuses everything from previous chapters:
+- Motions: `w`, `b`, `e`, `f`, `t`, `gg`, `G`, `s` (Flash)
 - Editing: `ciw`, `ci"`, `di(`, `yy`, `p`, `"_d`, `.`
-- Search: `/`, `n`, `N`, `<leader>sg`
-- Files: `<leader><space>`, `<leader>,`, `<leader>e`
+- Surround: `gsaiw"`, `gsd(`, `gsr"'`
+- Yank ring: `<C-p>`/`<C-n>` after paste, `<leader>p`
+- Search: `/`, `n`, `N`, `<leader>sg`, `<leader><space>`
+- Files/buffers: `<leader><space>`, `<leader>,`, `<leader>e`
 - Windows: `<leader>|`, `<leader>-`, `<C-h/j/k/l>`, `<leader>wd`
 - LSP: `gd`, `gr`, `K`, `<leader>ca`, `<leader>cr`, `<leader>cf`
 - Diagnostics: `[d`, `]d`, `<leader>cd`, `<leader>sd`
-- Git: `<leader>gs`, `<leader>gb`, `<leader>gf`
+- Git: `<leader>gg`, `<leader>gv`, `<leader>gH`, `<leader>gs`, `<leader>gb`
+- Hunks: `]h`, `[h`
+- Outline: `<leader>cs`
+- Refactoring: `<leader>re`, `<leader>rv`, `<leader>rr`
+- AI: `<leader>ae`, `<leader>ar`, `<leader>af`, `<leader>at`, `<leader>ac`
 - Terminal: `<leader>ft`, `<C-\><C-n>`
-- AI: verify locally with `<leader>sk`
 
 ## Common Workflows
 
 Implementation loop:
 
 ```text
-Find file -> inspect context -> edit -> format -> run test -> inspect diff.
-```
-
-Debug loop:
-
-```text
-Find failing test -> jump to source -> inspect references -> add focused change -> rerun.
+Find file → inspect outline → edit → format → check diagnostics → inspect diff
 ```
 
 Review loop:
 
 ```text
-Open git status -> inspect changed files -> run diagnostics/tests -> summarize risks.
+Open git status → inspect changed files → blame → file history → summarize with AI
+```
+
+Refactor loop:
+
+```text
+Open outline → find target → select block → extract → rename → verify diagnostics
 ```
 
 ## Practice Scenarios
 
 ### Scenario 1 - Basic Coding Pass
 
-1. Open a file with `<leader><space>`.
-2. Search inside it with `/`.
-3. Jump to a visible target with `s`.
-4. Change one word with `ciw`.
-5. Change one string with `ci"`.
+Practice area — open any source file in your project.
+
+Step-by-step:
+1. Open a file with `<leader><space>`, type filename, press `<CR>`.
+2. Search inside it for a function: `/function<CR>` or `/fn <CR>`.
+3. Jump to a visible target with `s`, type two characters of the target.
+4. Change one word with `ciw`, type replacement, press `<Esc>`.
+5. Change one string with `ci"`, type replacement, press `<Esc>`.
 6. Format with `<leader>cf`.
-7. Save with `:write`.
+7. Save with `:write<CR>`.
 
 Expected result: one intentional edit, formatted and saved.
 
 ### Scenario 2 - Multi-File Reading Pass
 
-1. Open a source file.
-2. Use `gd` on a symbol.
-3. Return with `<C-o>`.
-4. Use `gr` to find references.
-5. Open one reference.
-6. Switch buffers with `<leader>,`.
+Practice area — use a real TypeScript or Go file in your project.
 
-Expected result: you can trace code across files.
+Step-by-step:
+1. Open a source file with `<leader><space>`.
+2. Put cursor on a function call.
+3. Press `gd` to go to its definition.
+4. Press `<C-o>` to return.
+5. Press `gr` to find all references.
+6. Press `<CR>` on one reference to open it.
+7. Switch back to the original file with `<leader>,`, press `<CR>`.
+
+Expected result: you traced code across files without losing your place.
 
 ### Scenario 3 - Split Layout Pass
 
-1. Open a source file.
-2. Split right with `<leader>|`.
-3. Open a related test file.
-4. Split below with `<leader>-`.
-5. Open terminal.
-6. Move across windows with `<C-h/j/k/l>`.
-7. Close terminal window with `<leader>wd`.
+Practice area — use a source file and its corresponding test file.
 
-Expected result: source and test stay visible.
+Step-by-step:
+1. Open a source file with `<leader><space>`.
+2. Split right with `<leader>|`.
+3. In the new split, open the related test file with `<leader><space>`.
+4. Split the test window below with `<leader>-`.
+5. In the bottom split, open a terminal with `<leader>ft`.
+6. Run `pwd` and `<CR>`.
+7. Press `<C-\><C-n>` to exit terminal mode.
+8. Move across windows: `<C-h>`, `<C-j>`, `<C-k>`, `<C-l>`.
+9. Close the terminal window with `<leader>wd`.
+
+Expected result: source and test stay visible, terminal is a transient workspace.
 
 ### Scenario 4 - Search And Replace Pass
 
-1. Use `<leader>sg` to find a repeated term.
-2. Open one result.
-3. Use `/` to find the term in the buffer.
-4. Replace one line with `:s/old/new/g`.
-5. Use confirmation replace on a scratch file with `:%s/old/new/gc`.
+Practice area:
 
-Expected result: scoped replacements, no blind whole-project edits.
+```ts
+const apiEndpoint = "https://old-api.example.com/v1"
+const authEndpoint = "https://old-api.example.com/v1/auth"
+const dataEndpoint = "https://old-api.example.com/v1/data"
+```
+
+Step-by-step:
+1. Copy the practice area to a scratch file: `<leader>.`, then `i`, paste, `<Esc>`.
+2. Use `<leader>sg` to search for `old-api` across the project.
+3. Open one result with `<CR>`.
+4. Use `/old-api<CR>` to find the term in the buffer.
+5. Replace on one line with `:s/old-api/new-api/g<CR>`.
+6. Use confirmation replace on the scratch file with `:%s/old-api/new-api/gc<CR>`.
+7. Press `y` to confirm each, `n` to skip, `a` to replace all.
+
+Expected result: you replaced scoped occurrences, not the whole project blindly.
 
 ### Scenario 5 - Git Review Pass
 
-1. Open git status with `<leader>gs`.
-2. Open one changed file.
-3. Use `<leader>gb` on a changed or nearby line.
-4. Use `<leader>gf` to inspect file history.
-5. Open terminal with `<leader>ft`.
-6. Run `git diff --stat`.
-7. Return to Normal mode with `<C-\><C-n>`.
+Prerequisites: be in a git repository with uncommitted changes.
 
-Expected result: you understand current changes and file history.
+Step-by-step:
+1. Open git status picker with `<leader>gs`.
+2. Press `j`/`k` to browse changed files.
+3. Press `<CR>` to open one changed file.
+4. Press `]h` to jump to the first hunk.
+5. Press `<leader>gb` on the changed line to read blame.
+6. Press `<leader>gH` to open file history in DiffView.
+7. Press `q` to close DiffView.
+8. Press `<leader>gg` to open LazyGit.
+9. Press `d` to view the diff for the file.
+10. Press `q` to close LazyGit.
+
+Expected result: you understand current changes and their history without leaving the editor.
 
 ### Scenario 6 - Diagnostic Fix Pass
 
-1. Open diagnostics with `<leader>sd`.
-2. Jump to one diagnostic.
-3. Show line diagnostics with `<leader>cd`.
-4. Try code action with `<leader>ca`.
-5. Make the smallest edit.
-6. Format with `<leader>cf`.
+Practice area — use a real file with LSP diagnostics, or introduce a deliberate error:
 
-Expected result: one diagnostic is fixed or clearly understood.
-
-### Scenario 7 - AI-Assisted Review Pass
-
-1. Open a changed file.
-2. Select the relevant function.
-3. Open your installed AI action after verifying with `<leader>sk`.
-4. Ask:
-
-```text
-Review this selected code for correctness bugs only. Return findings first. Do not edit.
+```ts
+// Introduce an error: call a function that does not exist
+const result = nonExistentFunction("test")
+console.log(result.undeclared)
 ```
 
-5. Apply at most one small fix.
-6. Review git diff.
+Step-by-step:
+1. Open diagnostics picker with `<leader>sd`.
+2. Press `j`/`k` to move through diagnostics.
+3. Press `<CR>` to jump to one diagnostic.
+4. Press `<leader>cd` to read the line diagnostic.
+5. Try code action with `<leader>ca` — see what actions LSP offers.
+6. Make the smallest fix manually.
+7. Format with `<leader>cf`.
+8. Verify with `<leader>sd` — check that the diagnostic is gone.
 
-Expected result: AI is used as a reviewer, not an uncontrolled editor.
+Expected result: one diagnostic is fixed, layout is clean.
 
-### Scenario 8 - Test And Debug Pass
+### Scenario 7 - Refactor Pass
 
-1. Open a test file.
-2. Run nearest test with `<leader>tr` if available.
-3. Show output with `<leader>to`.
-4. Set a breakpoint with `<leader>db` if DAP is configured.
-5. Try debug nearest with `<leader>td`.
-6. Record missing config if it fails.
+Practice area:
 
-Expected result: you know whether your project test/debug workflow is ready.
+```ts
+async function handleWebhook(req: Request, res: Response) {
+  const payload = JSON.parse(req.body)
+  const signature = req.headers['x-signature']
+  const secret = process.env.WEBHOOK_SECRET
+  const expected = crypto.createHmac('sha256', secret).update(req.body).digest('hex')
+  if (signature !== `sha256=${expected}`) {
+    res.status(401).send('Invalid signature')
+    return
+  }
+  await db.saveWebhookEvent(payload)
+  res.status(200).send('OK')
+}
+```
+
+Step-by-step:
+1. Press `<leader>cs` to open the outline and confirm you can see the function.
+2. Press `<CR>` to jump to `handleWebhook`, press `<C-l>` to return to editor.
+3. Put cursor on line `const signature = ...`.
+4. Press `V` to enter linewise visual.
+5. Press `3j` to select down to `if (signature !== ...` line — 4 lines total.
+6. Press `<leader>re` to extract to a function.
+7. Type `verifyWebhookSignature` and press `<CR>`.
+8. Rename `verifyWebhookSignature` to `validateSignature` with `<leader>cr`.
+9. Check diagnostics with `<leader>sd`.
+
+Expected result: signature verification is in its own function, all references updated.
+
+### Scenario 8 - AI-Assisted Review Pass
+
+Practice area — use a real or recently changed function.
+
+Step-by-step:
+1. Open a changed file with `<leader><space>`.
+2. Use `gr` to find references to the main function.
+3. Select the function with `V` and `j`/`k`.
+4. Press `<leader>ar` to review for correctness.
+5. Read findings — do not apply anything yet.
+6. Apply at most one small fix manually.
+7. Stage with LazyGit: `<leader>gg`, `<Space>`, `q`.
+8. Press `<leader>ac` to generate a commit message.
+9. Use the message in your commit.
+
+Expected result: AI reviewed your code, you decided what to apply, commit message is ready.
 
 ## Real-World Drill
 
-Do this sequence without looking anything up:
+Do this entire sequence without looking anything up. If you forget a mapping, use `<leader>sk` to find it — do not open a browser.
 
 1. Open a file with `<leader><space>`.
-2. Open explorer with `<leader>e`.
-3. Open another file from explorer.
+2. Open Neo-tree with `<leader>e`, navigate to a nearby file with `j`/`k`, open it with `l`.
+3. Press `<C-l>` to return to the editor.
 4. Split vertically with `<leader>|`.
 5. Move to the other window with `<C-l>` or `<C-h>`.
 6. Create a scratch buffer with `<leader>.`.
-7. Type two lines.
+7. Press `i`, type two lines of notes, press `<Esc>`.
 8. Yank one line into register `a` with `"ayy`.
 9. Delete one disposable word into the black hole register with `"_dw`.
 10. Paste from register `a` with `"ap`.
 11. Search for a word with `/`.
-12. Replace one occurrence with `:s/old/new/`.
+12. Replace one occurrence with `:s/old/new/<CR>`.
 13. Open terminal with `<leader>ft`.
-14. Run `pwd`.
-15. Return to Normal mode with `<C-\><C-n>`.
-16. Open git status with `<leader>gs`.
-17. Inspect diagnostics with `<leader>sd`.
-18. Ask AI to summarize the current task if an AI extra is enabled.
-19. Close the extra window with `<leader>wd`.
-20. Delete unnecessary buffers with `<leader>bo`.
+14. Run `pwd` and `<CR>`.
+15. Press `<C-\><C-n>` to exit terminal mode.
+16. Press `<leader>ft` to close terminal.
+17. Open git status with `<leader>gs`, open a changed file with `<CR>`.
+18. Navigate hunks with `]h`.
+19. Read blame with `<leader>gb`.
+20. Press `<leader>gg` to open LazyGit, press `q` to close.
+21. Open diagnostics with `<leader>sd`.
+22. Select a suspicious function with `V` and `j`, ask AI to review with `<leader>ar`.
+23. Close the AI window with `<leader>aa`.
+24. Close extra window with `<leader>wd`.
+25. Delete unnecessary buffers with `<leader>bo`.
 
 ## Troubleshooting / Verify With Which-Key
 
-- If you forget a mapping, use `<leader>sk`; do not interrupt the drill with a web search.
-- If an optional extra is missing, write it down and continue with the next step.
+- If you forget a mapping, use `<leader>sk` — do not interrupt the drill with a web search.
+- If an action does nothing, check `:LazyExtras` or `:Lazy` for the relevant plugin.
 - If a command changes too much, undo with `u` and redo the step on a scratch file.
-- If your layout gets messy, use `<leader>wm`, `<leader>wd`, and `<leader>bo`.
+- If your layout gets messy, use `<leader>wm` (maximize), `<leader>wd` (close), and `<leader>bo` (close other buffers).
