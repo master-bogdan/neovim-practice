@@ -17,7 +17,7 @@ Neo-tree open/close:
 - `<leader>fE` - open Neo-tree at cwd
 
 Neo-tree internal keys (while focused inside the tree):
-- `<CR>` - open file or expand/collapse directory
+- `<Enter>` - open file or expand/collapse directory
 - `l` - open file or expand directory (right)
 - `h` - collapse directory (left)
 - `a` - create new file or directory (type `dirname/` to create a directory)
@@ -64,7 +64,7 @@ Browse from project root:
 ```text
 <leader>e          opens Neo-tree
 j/k                move up/down
-l or <CR>          expand directory or open file
+l or <Enter>          expand directory or open file
 <C-l>              jump back to editor window
 ```
 
@@ -75,7 +75,7 @@ Create a new file:
 navigate to parent directory
 a
 type filename
-<CR>
+<Enter>
 ```
 
 Create a new directory:
@@ -85,7 +85,7 @@ Create a new directory:
 navigate to parent
 a
 type dirname/    <- trailing slash makes it a directory
-<CR>
+<Enter>
 ```
 
 Rename a file:
@@ -95,7 +95,7 @@ Rename a file:
 navigate to file
 r
 type new name
-<CR>
+<Enter>
 ```
 
 Delete a file:
@@ -140,7 +140,7 @@ git status
 
 1. Press `<leader>e` to open Neo-tree at project root.
 2. Press `j` and `k` to move up and down.
-3. Press `l` or `<CR>` to expand a directory.
+3. Press `l` or `<Enter>` to expand a directory.
 4. Press `h` to collapse it.
 5. Press `q` to close Neo-tree.
 
@@ -150,7 +150,7 @@ Expected result: you can browse directories without touching the mouse.
 
 1. Press `<leader>e` to open Neo-tree.
 2. Navigate to any chapter file with `j`/`k`.
-3. Press `<CR>` to open it.
+3. Press `<Enter>` to open it.
 4. Press `<C-l>` to move focus back to the editor window.
 
 Expected result: file opens in the editor, cursor moves there automatically.
@@ -169,10 +169,10 @@ Expected result: two files visible side by side.
 1. Press `<leader>e` to open Neo-tree.
 2. Navigate to the `scratch/` directory (or create it).
 3. Press `a` to create a new file.
-4. Type `practice-notes.md` and press `<CR>`.
-5. Press `<CR>` again or `l` to open it.
+4. Type `practice-notes.md` and press `<Enter>`.
+5. Press `<Enter>` again or `l` to open it.
 6. Type some content in Insert mode: `i`, type, `<Esc>`.
-7. Save: `:write<CR>`.
+7. Save: `:write<Enter>`.
 
 Expected result: new file exists in the tree and on disk.
 
@@ -182,7 +182,7 @@ Expected result: new file exists in the tree and on disk.
 2. Navigate to the file you just created.
 3. Press `r`.
 4. Edit the name to `practice-notes-v2.md`.
-5. Press `<CR>`.
+5. Press `<Enter>`.
 
 Expected result: file is renamed in the tree.
 
@@ -207,9 +207,9 @@ Expected result: scratch buffer persists across toggles.
 ### Scenario 8 - Use The Terminal
 
 1. Press `<leader>ft` to open the floating terminal.
-2. Run `pwd` and press `<CR>`.
-3. Run `ls` and press `<CR>`.
-4. Run `git status` and press `<CR>`.
+2. Run `pwd` and press `<Enter>`.
+3. Run `ls` and press `<Enter>`.
+4. Run `git status` and press `<Enter>`.
 5. Press `<C-\><C-n>` to exit terminal mode.
 6. Press `<leader>ft` to close the terminal.
 
@@ -227,7 +227,7 @@ Do this sequence without looking anything up:
 6. Press `i`, write one implementation note, press `<Esc>`.
 7. Press `<leader>.` to close scratch.
 8. Open terminal with `<leader>ft`.
-9. Run `git status` and `<CR>`.
+9. Run `git status` and `<Enter>`.
 10. Press `<C-\><C-n>` to exit terminal mode.
 11. Press `<leader>ft` to close terminal.
 12. Switch back to first buffer with `<leader>bb` or `<S-h>`.

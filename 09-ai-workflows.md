@@ -47,7 +47,7 @@ Inside CopilotChat window:
 - `<C-s>` - submit prompt
 - `<Esc>` - close the chat window
 - `q` - close the chat window
-- `<CR>` - submit prompt (in insert mode inside chat)
+- `<Enter>` - submit prompt (in insert mode inside chat)
 
 Context control before asking:
 - Select code in Visual mode first, then press a `<leader>a` mapping — the selection becomes context

@@ -187,7 +187,7 @@ const final_status = payload.final_status
 ```
 
 Step-by-step:
-1. Put cursor on `status` in `request_status` (left side): `fst` or `/request_status<CR>`
+1. Put cursor on `status` in `request_status` (left side): `fst` or `/request_status<Enter>`
 2. Press `cw` to change forward word, type `state`, press `<Esc>`
 3. Move to next line `j`, find `status` on left side, repeat with `.`
 4. Repeat for third line
@@ -212,10 +212,10 @@ const enabledJobs = ["fetch", "debug_fetch", "publish", "debug_publish"]
 ```
 
 Step-by-step:
-1. Put cursor inside `"debug_mode"`: `/debug_mode<CR>`
+1. Put cursor inside `"debug_mode"`: `/debug_mode<Enter>`
 2. Press `di"` to delete inside quotes, then `X` to remove the comma before it, then `x` if a comma follows
 3. Or select including comma: press `v`, select `, "debug_mode"`, press `d`
-4. For the second line, find `"debug_fetch"`: `/debug_fetch<CR>`, select `, "debug_fetch"` with `v` then `f"`, press `d`
+4. For the second line, find `"debug_fetch"`: `/debug_fetch<Enter>`, select `, "debug_fetch"` with `v` then `f"`, press `d`
 5. Repeat for `"debug_publish"` with `, "debug_publish"`: `v`, `f"`, `d`
 
 Expected result:
@@ -238,9 +238,9 @@ const markdown = `room created`
 ```
 
 Step-by-step:
-1. Put cursor inside `"room created"` on line 1: `/room created<CR>`
+1. Put cursor inside `"room created"` on line 1: `/room created<Enter>`
 2. Press `ci"`, type `sync queued`, press `<Esc>`
-3. Move to line 2, put cursor inside `'room created'`: `j/room<CR>`
+3. Move to line 2, put cursor inside `'room created'`: `j/room<Enter>`
 4. Press `ci'`, type `sync queued`, press `<Esc>`
 5. Move to line 3, put cursor inside `` `room created` ``: `j`
 6. Press `` ci` ``, type `sync queued`, press `<Esc>`
@@ -266,7 +266,7 @@ trackAuditEvent("variable_sync", roomId, userId)
 ```
 
 Step-by-step:
-1. Put cursor inside the first call's arguments: `/publishVariable<CR>`, then `f(`
+1. Put cursor inside the first call's arguments: `/publishVariable<Enter>`, then `f(`
 2. Press `ci(`, type `payload`, press `<Esc>`
 3. Move to next line: `j`
 4. Press `f(`, then `ci(`, type `syncJob`, press `<Esc>`
@@ -298,7 +298,7 @@ Step-by-step:
 2. Press `r` then `x` to mark complete: `rx`
 3. Move to line 2: `j`
 4. Delete the entire line: `dd`
-5. Now on line 3, put cursor on `only`: `f o` or `/only<CR>`
+5. Now on line 3, put cursor on `only`: `f o` or `/only<Enter>`
 6. Press `cw`, type `mixed`, press `<Esc>`
 
 Expected result:

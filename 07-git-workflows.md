@@ -40,7 +40,7 @@ Mini.diff overlay:
 DiffView internal keys (while DiffView is open):
 - `<Tab>` - move to next changed file in the file panel
 - `<S-Tab>` - move to previous changed file
-- `<CR>` - open file from the file panel
+- `<Enter>` - open file from the file panel
 - `q` - close DiffView
 - `<leader>b` - toggle DiffView file panel
 - `]q` - next change in diff
@@ -83,7 +83,7 @@ Review all changed files at once:
 ```text
 <leader>gv          open DiffView
 <Tab>               move to next changed file
-<CR>                open file to inspect
+<Enter>                open file to inspect
 ]q / [q             jump between hunks
 q                   close DiffView
 ```
@@ -124,7 +124,7 @@ Practice area — make a small throwaway change first:
 ```text
 Open any chapter file
 Press i, add a space somewhere, press <Esc>
-:write<CR>
+:write<Enter>
 ```
 
 Then:
@@ -143,7 +143,7 @@ Prerequisites: have at least one changed or staged file.
 
 1. Press `<leader>gv` to open DiffView.
 2. Press `<Tab>` to move to the next changed file in the panel.
-3. Press `<CR>` to open a file.
+3. Press `<Enter>` to open a file.
 4. Press `]q` to jump to the next hunk.
 5. Press `[q` to jump back.
 6. Press `q` to close DiffView.
@@ -197,7 +197,7 @@ Expected result: you can navigate individual changes within a file without leavi
 
 1. Press `<leader>gs` to open the git status picker.
 2. Press `j`/`k` to move through changed files.
-3. Press `<CR>` to open a file.
+3. Press `<Enter>` to open a file.
 4. Press `<C-v>` to open in vertical split instead.
 
 Expected result: you can jump directly from status to any changed file.
@@ -205,9 +205,9 @@ Expected result: you can jump directly from status to any changed file.
 ### Scenario 8 - Terminal Git As Fallback
 
 1. Press `<leader>ft` to open the terminal.
-2. Run `git status` and press `<CR>`.
-3. Run `git diff --stat` and press `<CR>`.
-4. Run `git log --oneline --decorate -n 10` and press `<CR>`.
+2. Run `git status` and press `<Enter>`.
+3. Run `git diff --stat` and press `<Enter>`.
+4. Run `git log --oneline --decorate -n 10` and press `<Enter>`.
 5. Press `<C-\><C-n>` to exit terminal mode.
 6. Press `<leader>ft` to close terminal.
 
@@ -218,7 +218,7 @@ Expected result: you know when the picker is enough and when the terminal gives 
 Do this sequence in a repository with uncommitted changes:
 
 1. Press `<leader>gs` to open the status picker.
-2. Press `<CR>` to open one changed file.
+2. Press `<Enter>` to open one changed file.
 3. Press `]h` to jump to the first changed hunk.
 4. Press `<leader>gb` on the changed line to read the blame.
 5. Press `<leader>gH` to see the file's commit history.

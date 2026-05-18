@@ -45,7 +45,7 @@ PR review actions:
 Navigation inside PR diff:
 - `]q` - next change / hunk
 - `[q` - previous change / hunk
-- `<CR>` - open file at that change
+- `<Enter>` - open file at that change
 
 Thread and comment actions:
 - `<leader>ca` - add comment to a thread
@@ -63,16 +63,16 @@ Buffer navigation:
 List and open a PR:
 
 ```text
-:Octo pr list<CR>
+:Octo pr list<Enter>
 j/k                 navigate PRs
-<CR>                open PR as a buffer
+<Enter>                open PR as a buffer
 ```
 
 Review a PR diff:
 
 ```text
-:Octo pr list<CR>
-<CR>                open PR
+:Octo pr list<Enter>
+<Enter>                open PR
 <leader>pc          open the Files Changed section or navigate to it
 ]q                  jump to next diff hunk
 [q                  jump to previous hunk
@@ -92,17 +92,17 @@ Create a PR:
 
 ```text
 Push your branch first via terminal or LazyGit
-:Octo pr create<CR>
+:Octo pr create<Enter>
 Fill in title and description
-<CR>                submit
+<Enter>                submit
 ```
 
 Checkout a PR branch locally:
 
 ```text
-:Octo pr list<CR>
-<CR>                open PR
-:Octo pr checkout<CR>
+:Octo pr list<Enter>
+<Enter>                open PR
+:Octo pr checkout<Enter>
 ```
 
 ## Practice Scenarios
@@ -111,9 +111,9 @@ Checkout a PR branch locally:
 
 Step-by-step:
 1. Press `<leader>ft` to open the terminal.
-2. Run `gh auth status` and press `<CR>` — confirm you are authenticated.
+2. Run `gh auth status` and press `<Enter>` — confirm you are authenticated.
 3. Press `<C-\><C-n>` to exit terminal mode, press `<leader>ft` to close terminal.
-4. Run `:Octo pr list<CR>` in command mode — a list of open PRs should appear.
+4. Run `:Octo pr list<Enter>` in command mode — a list of open PRs should appear.
 
 Expected result: PR list loads. If not, authentication is the issue.
 
@@ -122,9 +122,9 @@ Expected result: PR list loads. If not, authentication is the issue.
 Prerequisites: your repo has at least one open PR.
 
 Step-by-step:
-1. Run `:Octo pr list<CR>`.
+1. Run `:Octo pr list<Enter>`.
 2. Press `j`/`k` to move through the list.
-3. Press `<CR>` to open a PR as a buffer.
+3. Press `<Enter>` to open a PR as a buffer.
 4. Read the description — it renders as a Neovim buffer.
 5. Scroll with `<C-d>` and `<C-u>`.
 6. Press `q` to close.
@@ -134,11 +134,11 @@ Expected result: you read the full PR description including comments in the edit
 ### Scenario 3 - Navigate PR Diff Hunks
 
 Step-by-step:
-1. Open a PR with `:Octo pr list<CR>` and `<CR>`.
+1. Open a PR with `:Octo pr list<Enter>` and `<Enter>`.
 2. Navigate to the diff section (scroll down or search with `/Files changed`).
 3. Press `]q` to jump to the next hunk.
 4. Press `[q` to jump back.
-5. Press `<CR>` on a hunk to open the file at that change.
+5. Press `<Enter>` on a hunk to open the file at that change.
 
 Expected result: you can review all changed hunks without using the mouse.
 
@@ -150,7 +150,7 @@ Step-by-step:
 3. Press `i` to enter Insert mode.
 4. Type your comment.
 5. Press `<Esc>`.
-6. Press `<leader>ca` or `:Octo comment add<CR>` to submit the comment.
+6. Press `<leader>ca` or `:Octo comment add<Enter>` to submit the comment.
 
 Expected result: comment appears in the PR thread.
 
@@ -176,9 +176,9 @@ Expected result: PR is marked as "Changes requested" on GitHub.
 ### Scenario 7 - Browse Issues
 
 Step-by-step:
-1. Run `:Octo issue list<CR>`.
+1. Run `:Octo issue list<Enter>`.
 2. Press `j`/`k` to navigate.
-3. Press `<CR>` to open an issue.
+3. Press `<Enter>` to open an issue.
 4. Read the thread.
 5. Press `<leader>ca` to add a comment if needed.
 6. Press `q` to close.
@@ -188,9 +188,9 @@ Expected result: you can read and comment on issues without opening the browser.
 ### Scenario 8 - Use Octo With CopilotChat
 
 Step-by-step:
-1. Open a PR with `:Octo pr list<CR>` and `<CR>`.
+1. Open a PR with `:Octo pr list<Enter>` and `<Enter>`.
 2. Read the PR description and diff.
-3. Open a changed file by pressing `<CR>` on a diff hunk.
+3. Open a changed file by pressing `<Enter>` on a diff hunk.
 4. Select the changed function with `V` and `j`.
 5. Press `<leader>ar` to ask CopilotChat to review it.
 6. Read the review findings.
@@ -203,12 +203,12 @@ Expected result: AI review informs your GitHub review comment, all inside the ed
 
 Do this sequence for a real PR in one of your repositories:
 
-1. Run `:Octo pr list<CR>`.
-2. Open a PR with `<CR>`.
+1. Run `:Octo pr list<Enter>`.
+2. Open a PR with `<Enter>`.
 3. Read the description by scrolling with `<C-d>`.
 4. Navigate to the diff with `]q`.
 5. Jump through all hunks with `]q`, reading each one.
-6. Open one changed file with `<CR>`.
+6. Open one changed file with `<Enter>`.
 7. Use `gd` to inspect a definition from the diff.
 8. Return with `<C-o>`.
 9. Select the changed function with `V` and `j`.

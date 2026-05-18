@@ -54,13 +54,13 @@ Open outline → find target → select block → extract → rename → verify 
 Practice area — open any source file in your project.
 
 Step-by-step:
-1. Open a file with `<leader><space>`, type filename, press `<CR>`.
-2. Search inside it for a function: `/function<CR>` or `/fn <CR>`.
+1. Open a file with `<leader><space>`, type filename, press `<Enter>`.
+2. Search inside it for a function: `/function<Enter>` or `/fn <Enter>`.
 3. Jump to a visible target with `s`, type two characters of the target.
 4. Change one word with `ciw`, type replacement, press `<Esc>`.
 5. Change one string with `ci"`, type replacement, press `<Esc>`.
 6. Format with `<leader>cf`.
-7. Save with `:write<CR>`.
+7. Save with `:write<Enter>`.
 
 Expected result: one intentional edit, formatted and saved.
 
@@ -74,8 +74,8 @@ Step-by-step:
 3. Press `gd` to go to its definition.
 4. Press `<C-o>` to return.
 5. Press `gr` to find all references.
-6. Press `<CR>` on one reference to open it.
-7. Switch back to the original file with `<leader>,`, press `<CR>`.
+6. Press `<Enter>` on one reference to open it.
+7. Switch back to the original file with `<leader>,`, press `<Enter>`.
 
 Expected result: you traced code across files without losing your place.
 
@@ -89,7 +89,7 @@ Step-by-step:
 3. In the new split, open the related test file with `<leader><space>`.
 4. Split the test window below with `<leader>-`.
 5. In the bottom split, open a terminal with `<leader>ft`.
-6. Run `pwd` and `<CR>`.
+6. Run `pwd` and `<Enter>`.
 7. Press `<C-\><C-n>` to exit terminal mode.
 8. Move across windows: `<C-h>`, `<C-j>`, `<C-k>`, `<C-l>`.
 9. Close the terminal window with `<leader>wd`.
@@ -109,10 +109,10 @@ const dataEndpoint = "https://old-api.example.com/v1/data"
 Step-by-step:
 1. Copy the practice area to a scratch file: `<leader>.`, then `i`, paste, `<Esc>`.
 2. Use `<leader>sg` to search for `old-api` across the project.
-3. Open one result with `<CR>`.
-4. Use `/old-api<CR>` to find the term in the buffer.
-5. Replace on one line with `:s/old-api/new-api/g<CR>`.
-6. Use confirmation replace on the scratch file with `:%s/old-api/new-api/gc<CR>`.
+3. Open one result with `<Enter>`.
+4. Use `/old-api<Enter>` to find the term in the buffer.
+5. Replace on one line with `:s/old-api/new-api/g<Enter>`.
+6. Use confirmation replace on the scratch file with `:%s/old-api/new-api/gc<Enter>`.
 7. Press `y` to confirm each, `n` to skip, `a` to replace all.
 
 Expected result: you replaced scoped occurrences, not the whole project blindly.
@@ -124,7 +124,7 @@ Prerequisites: be in a git repository with uncommitted changes.
 Step-by-step:
 1. Open git status picker with `<leader>gs`.
 2. Press `j`/`k` to browse changed files.
-3. Press `<CR>` to open one changed file.
+3. Press `<Enter>` to open one changed file.
 4. Press `]h` to jump to the first hunk.
 5. Press `<leader>gb` on the changed line to read blame.
 6. Press `<leader>gH` to open file history in DiffView.
@@ -148,7 +148,7 @@ console.log(result.undeclared)
 Step-by-step:
 1. Open diagnostics picker with `<leader>sd`.
 2. Press `j`/`k` to move through diagnostics.
-3. Press `<CR>` to jump to one diagnostic.
+3. Press `<Enter>` to jump to one diagnostic.
 4. Press `<leader>cd` to read the line diagnostic.
 5. Try code action with `<leader>ca` — see what actions LSP offers.
 6. Make the smallest fix manually.
@@ -178,12 +178,12 @@ async function handleWebhook(req: Request, res: Response) {
 
 Step-by-step:
 1. Press `<leader>cs` to open the outline and confirm you can see the function.
-2. Press `<CR>` to jump to `handleWebhook`, press `<C-l>` to return to editor.
+2. Press `<Enter>` to jump to `handleWebhook`, press `<C-l>` to return to editor.
 3. Put cursor on line `const signature = ...`.
 4. Press `V` to enter linewise visual.
 5. Press `3j` to select down to `if (signature !== ...` line — 4 lines total.
 6. Press `<leader>re` to extract to a function.
-7. Type `verifyWebhookSignature` and press `<CR>`.
+7. Type `verifyWebhookSignature` and press `<Enter>`.
 8. Rename `verifyWebhookSignature` to `validateSignature` with `<leader>cr`.
 9. Check diagnostics with `<leader>sd`.
 
@@ -221,12 +221,12 @@ Do this entire sequence without looking anything up. If you forget a mapping, us
 9. Delete one disposable word into the black hole register with `"_dw`.
 10. Paste from register `a` with `"ap`.
 11. Search for a word with `/`.
-12. Replace one occurrence with `:s/old/new/<CR>`.
+12. Replace one occurrence with `:s/old/new/<Enter>`.
 13. Open terminal with `<leader>ft`.
-14. Run `pwd` and `<CR>`.
+14. Run `pwd` and `<Enter>`.
 15. Press `<C-\><C-n>` to exit terminal mode.
 16. Press `<leader>ft` to close terminal.
-17. Open git status with `<leader>gs`, open a changed file with `<CR>`.
+17. Open git status with `<leader>gs`, open a changed file with `<Enter>`.
 18. Navigate hunks with `]h`.
 19. Read blame with `<leader>gb`.
 20. Press `<leader>gg` to open LazyGit, press `q` to close.

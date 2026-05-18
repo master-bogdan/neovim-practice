@@ -14,7 +14,7 @@ Outline:
 - `<leader>cs` - toggle the code outline sidebar
 - Inside the outline panel:
   - `j`/`k` - move up/down through symbols
-  - `<CR>` - jump to symbol in file
+  - `<Enter>` - jump to symbol in file
   - `<Esc>` or `q` - close outline
   - `o` - fold/unfold a symbol group
   - `<C-l>` - move focus back to the editor window
@@ -40,7 +40,7 @@ Get an overview of a large file:
 Open a file with many functions or types
 <leader>cs          outline sidebar opens
 j/k                 navigate symbols
-<CR>                jump to a symbol
+<Enter>                jump to a symbol
 <C-l>               return to editor
 ```
 
@@ -50,7 +50,7 @@ Extract a repeated expression into a variable:
 Select the expression in Visual mode (v or V)
 <leader>rv          prompts for variable name
 type the name
-<CR>
+<Enter>
 ```
 
 Extract a block of logic into a function:
@@ -59,7 +59,7 @@ Extract a block of logic into a function:
 Select the lines to extract in Visual mode (V then j/k)
 <leader>re          prompts for function name
 type the name
-<CR>
+<Enter>
 ```
 
 Inline a variable that is only used once:
@@ -86,7 +86,7 @@ Step-by-step:
 1. Open a file with at least 3 functions: `<leader><space>`, then type a filename.
 2. Press `<leader>cs` to toggle the outline.
 3. Press `j`/`k` to move through symbols in the outline.
-4. Press `<CR>` to jump to a symbol.
+4. Press `<Enter>` to jump to a symbol.
 5. Press `<C-l>` to return focus to the editor.
 6. Press `<leader>cs` again to close the outline.
 
@@ -125,7 +125,7 @@ Step-by-step:
 1. Copy the practice area into a `.ts` file or use a real TypeScript file.
 2. Press `<leader>cs` to open the outline.
 3. Use `j`/`k` to find `updateUser`.
-4. Press `<CR>` to jump to it.
+4. Press `<Enter>` to jump to it.
 5. Press `o` to fold/unfold the class group.
 
 Expected result: the outline lets you jump directly to `updateUser` without scrolling.
@@ -145,7 +145,7 @@ Step-by-step:
 2. Press `v` to enter visual mode.
 3. Select `cents / 100` (use `e`, `w`, or `l` to extend selection).
 4. Press `<leader>rv` to extract variable.
-5. Type `dollars` as the variable name and press `<CR>`.
+5. Type `dollars` as the variable name and press `<Enter>`.
 
 Expected result:
 
@@ -176,7 +176,7 @@ Step-by-step:
 2. Press `V` to enter linewise visual.
 3. Press `2j` to select down through `const finalAmount = total + tax`.
 4. Press `<leader>re` to extract function.
-5. Type `calculateTotal` as the function name and press `<CR>`.
+5. Type `calculateTotal` as the function name and press `<Enter>`.
 
 Expected result: the selected lines move into a new `calculateTotal` function, and the original code calls it.
 
@@ -226,7 +226,7 @@ Step-by-step:
 2. Press `<leader>cr` to start LSP rename.
 3. A prompt appears with the current name pre-filled.
 4. Type the new name.
-5. Press `<CR>` to apply — all references in all files update.
+5. Press `<Enter>` to apply — all references in all files update.
 6. Press `<leader>sd` to check for any diagnostics that appeared after the rename.
 
 Expected result: all usages of the symbol are renamed. No manual search-replace needed.
@@ -237,7 +237,7 @@ Do this sequence on a real source file:
 
 1. Open a large file (100+ lines) with `<leader><space>`.
 2. Press `<leader>cs` to open the outline.
-3. Navigate to a function you want to inspect with `j`/`k`, press `<CR>`.
+3. Navigate to a function you want to inspect with `j`/`k`, press `<Enter>`.
 4. Press `<C-l>` to return to the editor.
 5. Find a repeated expression — select it with `v`.
 6. Press `<leader>rv` to extract it to a variable.
