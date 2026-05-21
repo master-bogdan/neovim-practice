@@ -64,6 +64,11 @@ Step-by-step:
 
 Expected result: one intentional edit, formatted and saved.
 
+> **Target times:**
+> - Expert: 1 minute
+> - Proficient: 2 minutes
+> - Learning: take your time
+
 ### Scenario 2 - Multi-File Reading Pass
 
 Practice area — use a real TypeScript or Go file in your project.
@@ -78,6 +83,11 @@ Step-by-step:
 7. Switch back to the original file with `<leader>,`, press `<Enter>`.
 
 Expected result: you traced code across files without losing your place.
+
+> **Target times:**
+> - Expert: 1.5 minutes
+> - Proficient: 3 minutes
+> - Learning: take your time
 
 ### Scenario 3 - Split Layout Pass
 
@@ -95,6 +105,11 @@ Step-by-step:
 9. Close the terminal window with `<leader>wd`.
 
 Expected result: source and test stay visible, terminal is a transient workspace.
+
+> **Target times:**
+> - Expert: 1.5 minutes
+> - Proficient: 3 minutes
+> - Learning: take your time
 
 ### Scenario 4 - Search And Replace Pass
 
@@ -117,6 +132,11 @@ Step-by-step:
 
 Expected result: you replaced scoped occurrences, not the whole project blindly.
 
+> **Target times:**
+> - Expert: 2 minutes
+> - Proficient: 4 minutes
+> - Learning: take your time
+
 ### Scenario 5 - Git Review Pass
 
 Prerequisites: be in a git repository with uncommitted changes.
@@ -134,6 +154,11 @@ Step-by-step:
 10. Press `q` to close LazyGit.
 
 Expected result: you understand current changes and their history without leaving the editor.
+
+> **Target times:**
+> - Expert: 2.5 minutes
+> - Proficient: 5 minutes
+> - Learning: take your time
 
 ### Scenario 6 - Diagnostic Fix Pass
 
@@ -156,6 +181,11 @@ Step-by-step:
 8. Verify with `<leader>sd` — check that the diagnostic is gone.
 
 Expected result: one diagnostic is fixed, layout is clean.
+
+> **Target times:**
+> - Expert: 2 minutes
+> - Proficient: 4 minutes
+> - Learning: take your time
 
 ### Scenario 7 - Refactor Pass
 
@@ -189,6 +219,11 @@ Step-by-step:
 
 Expected result: signature verification is in its own function, all references updated.
 
+> **Target times:**
+> - Expert: 2.5 minutes
+> - Proficient: 5 minutes
+> - Learning: take your time
+
 ### Scenario 8 - AI-Assisted Review Pass
 
 Practice area — use a real or recently changed function.
@@ -206,6 +241,104 @@ Step-by-step:
 
 Expected result: AI reviewed your code, you decided what to apply, commit message is ready.
 
+> **Target times:**
+> - Expert: 3 minutes
+> - Proficient: 6 minutes
+> - Learning: take your time
+
+### Scenario 9 - Debug And Fix Pass
+
+Practice area — create or use a TypeScript file with intentional errors:
+
+```ts
+import { unused } from "some-module"
+
+interface User {
+  name: string
+  age: number
+  email: string
+}
+
+function getUser(id): User {
+  const user = { name: "Alice", age: "thirty", email: "alice@example.com" }
+  return user
+}
+
+function processUsers(users: User[]) {
+  const filtered = users.filter((u) => u.age > 18)
+  filtered.map((u) => {
+    console.log(u.name)
+  })
+}
+```
+
+Errors present: unused import, missing parameter type (implicit any), type mismatch (`"thirty"` assigned to `number`), missing return type annotation on `processUsers`, missing explicit return in `map`.
+
+Step-by-step:
+1. Open the file with `<leader><space>`.
+2. Press `]d` to jump to the first diagnostic.
+3. Press `K` to hover and understand the error.
+4. Press `<leader>ca` to see if LSP offers a quick fix. If it does, apply it.
+5. Press `]d` to move to the next diagnostic.
+6. Press `K` to understand this error.
+7. If the fix is non-obvious, select the problematic area with `V` and press `<leader>af` (AI Fix) to let the AI suggest a correction.
+8. Apply the AI suggestion or fix manually.
+9. Press `]d` again and repeat: `K` to understand, `<leader>ca` for quick fix or manual edit.
+10. Continue until `]d` wraps around (no more diagnostics forward).
+11. Verify all diagnostics are resolved: press `<leader>sd` — the list should be empty for this file.
+12. Format the file with `<leader>cf`.
+13. Save with `:write<Enter>`.
+
+Expected result: all 4-5 diagnostics resolved, file formatted and saved.
+
+> **Target times:**
+> - Expert: 3 minutes
+> - Proficient: 6 minutes
+> - Learning: take your time
+
+### Scenario 10 - Search-Replace-Verify Pass
+
+Practice area — use a file where a variable or function name appears 5+ times and needs renaming (or use this example):
+
+```ts
+const fetchData = async (url: string) => {
+  const fetchDataResult = await fetch(url)
+  if (!fetchDataResult.ok) {
+    throw new Error(`fetchData failed: ${fetchDataResult.status}`)
+  }
+  return fetchDataResult.json()
+}
+
+export function useFetchData(url: string) {
+  return fetchData(url)
+}
+```
+
+Goal: rename all occurrences of `fetchData` to `requestData` using the `cgn` pattern.
+
+Step-by-step:
+1. Open the file with `<leader><space>`.
+2. Put cursor on the first `fetchData` occurrence.
+3. Press `*` to search for the word under cursor. All occurrences are now highlighted.
+4. Press `N` to return to the first match (since `*` moves forward).
+5. Type `cgn` — this selects the current match and enters change mode.
+6. Type `requestData` and press `<Esc>`.
+7. Press `.` to repeat the change on the next occurrence.
+8. If an occurrence should NOT be renamed (like a different context), press `n` to skip to the next match, then `.` to change it.
+9. Continue pressing `.` or `n` then `.` until all desired occurrences are renamed.
+10. Open trouble.nvim diagnostics with `<leader>sd` to verify no new errors were introduced.
+11. If diagnostics appear, jump to them with `<Enter>` and fix (the partial rename may have broken a reference).
+12. Format the file with `<leader>cf`.
+13. Save with `:write<Enter>`.
+14. Stage and commit: press `<leader>gg` to open LazyGit, stage the file with `<Space>`, press `c` to commit, type your message, confirm with `<Enter>`, press `q` to close.
+
+Expected result: all intended occurrences renamed, no new diagnostics, file formatted and committed.
+
+> **Target times:**
+> - Expert: 2 minutes
+> - Proficient: 4 minutes
+> - Learning: take your time
+
 ## Real-World Drill
 
 Do this entire sequence without looking anything up. If you forget a mapping, use `<leader>sk` to find it — do not open a browser.
@@ -222,6 +355,9 @@ Do this entire sequence without looking anything up. If you forget a mapping, us
 10. Paste from register `a` with `"ap`.
 11. Search for a word with `/`.
 12. Replace one occurrence with `:s/old/new/<Enter>`.
+
+> **Recovery Checkpoint:** At this point you should have: 2 splits visible, terminal output captured, outline showing 5+ symbols. If your layout is different, use `<C-w>o` to reset to one window and restart from step 8.
+
 13. Open terminal with `<leader>ft`.
 14. Run `pwd` and `<Enter>`.
 15. Press `<C-\><C-n>` to exit terminal mode.

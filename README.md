@@ -19,33 +19,47 @@ Sources used:
 ## Recommended Flow
 
 Daily minimum:
-- 10 minutes: `01-modal-editing-and-motions.md`
-- 10 minutes: one workflow chapter
-- 10 minutes: one real-world drill
+- 10 minutes: one drill file from `drills/` (timed, hands-on)
+- 10 minutes: one workflow chapter (theory + scenarios)
+- 10 minutes: one real-world drill from a chapter
 
 Weekly rotation:
-- Day 1: motions + operators + surround + yank ring (ch 1, 2)
-- Day 2: search, replace, pickers, files, buffers (ch 3, 4)
-- Day 3: Neo-tree, terminal, LSP, diagnostics, formatting (ch 5, 6)
+- Day 1: motions + operators + surround + yank ring (ch 1, 2) + `drills/01-motions/`
+- Day 2: search, replace, pickers, files, buffers (ch 3, 4) + `drills/03-search-replace/`
+- Day 3: Neo-tree, terminal, LSP, diagnostics, formatting (ch 5, 6) + `drills/05-lsp/`
 - Day 4: git — LazyGit, DiffView, hunks, blame (ch 7)
-- Day 5: AI — CopilotChat custom prompts (ch 9)
-- Day 6: outline + refactoring + GitHub/Octo (ch 10, 12)
-- Day 7: full workflow drills (ch 11)
+- Day 5: AI — CopilotChat + inline completions (ch 9)
+- Day 6: outline + refactoring + GitHub/Octo (ch 10, 12) + `drills/06-refactoring/`
+- Day 7: full workflow drills (ch 11) + `drills/07-multifile/`
 
 ## Chapters
 
 1. `01-modal-editing-and-motions.md` - modes, cursor movement, word movement, line movement, Flash
 2. `02-editing-operators-and-text-objects.md` - operators, registers, text objects, visual mode, mini-surround, yanky
 3. `03-search-replace-and-navigation.md` - search, substitute, project search, quickfix, location list, jumps
-4. `04-files-buffers-windows-tabs.md` - pickers, buffers, splits, tabs, sessions
+4. `04-files-buffers-windows-tabs.md` - pickers, buffers, splits, tabs, sessions, project switcher, treesitter-context
 5. `05-explorer-terminal-and-scratch.md` - Neo-tree (full internal keys), terminal, scratch buffers
 6. `06-lsp-diagnostics-formatting.md` - definitions, references, hover, rename, code actions, diagnostics, formatting
 7. `07-git-workflows.md` - LazyGit, DiffView, gitsigns hunks, blame, file history
 8. `08-lazyvim-customization-and-which-key.md` - which-key, Lazy, extras, keymap discovery, config habits
-9. `09-ai-workflows.md` - CopilotChat with custom prompts: Explain, Review, Fix, Tests, Commit, Optimize
+9. `09-ai-workflows.md` - CopilotChat custom prompts + inline Copilot completions (partial accept, cycle, dismiss)
 10. `10-outline-and-refactoring.md` - code outline sidebar, extract function/variable, inline, rename
 11. `11-full-workflow-drills.md` - combined realistic drills across all tools
 12. `12-octo-github-workflows.md` - GitHub PRs and issues as buffers, inline review, approve, comment
+13. `13-advanced-editing-patterns.md` - block visual, marks, folds, batch editing, trouble, mini.map, mini.hipatterns
+
+## Practice Drills (drills/)
+
+Standalone source files to open and edit in nvim. Each has timing targets.
+
+- `drills/01-motions/` - navigate-functions.ts, jump-between-blocks.go, flash-precision.ts
+- `drills/02-editing/` - fix-the-bugs.ts, surround-and-objects.py, registers-and-macros.ts, yanky-clipboard.ts
+- `drills/03-search-replace/` - rename-api-versions.ts, batch-terraform-update.tf, fix-sql-queries.sql
+- `drills/04-navigation/` - project-switching.md (guided buffer/window/tab/project drill)
+- `drills/05-lsp/` - diagnose-and-fix.ts, navigate-codebase.go
+- `drills/06-refactoring/` - extract-and-inline.ts, restructure-go-handler.go
+- `drills/07-multifile/` - full cross-file rename exercise (5 TypeScript files)
+- `drills/08-git/` - conflict-resolution.ts, hunk-staging.go
 
 ## Config Assumptions
 

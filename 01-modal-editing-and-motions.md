@@ -14,6 +14,15 @@ operator + motion or text object
 
 Before editing quickly, learn to land on the exact target. Avoid holding `h` or `l` for long distances. Use words, lines, search, and Flash.
 
+### Choosing The Right Motion — Decision Framework
+
+| Situation | Best motion | Why |
+|-----------|-------------|-----|
+| Target is on the same line, known character | `f` / `t` | Fewest keystrokes for inline targets |
+| Target is visible on screen, 2-char target | `s` (Flash) | One jump, no scrolling |
+| Target is anywhere in the buffer, pattern/regex needed | `/` search | Reaches beyond the visible viewport |
+| You already visited the target recently | `<C-o>` / `<C-i>` | Retrace previous jumps without remembering line numbers |
+
 ## Keymaps
 
 Core modes:
@@ -55,9 +64,24 @@ Line character search:
 - `;` - repeat last `f`, `F`, `t`, or `T`
 - `,` - repeat in the opposite direction
 
+Sentence and paragraph motion:
+- `(` - sentence backward
+- `)` - sentence forward
+- `{` - paragraph backward
+- `}` - paragraph forward
+
+Jump list:
+- `<C-o>` - jump back in jump list
+- `<C-i>` - jump forward in jump list
+
+Scroll positioning:
+- `zt` - scroll current line to top
+- `zz` - scroll current line to center
+- `zb` - scroll current line to bottom
+
 LazyVim / plugin motion:
 - `s` - Flash jump to visible target
-- `S` - Flash Treesitter target
+- `S` - Flash Treesitter select (syntactic node)
 - `<C-d>` - half-page down
 - `<C-u>` - half-page up
 - `<C-f>` - page down
@@ -247,6 +271,188 @@ alpha beta gamma delta epsilon zeta eta theta
 Required moves: use `w` too many times, recover with `b`; use `f` too far with `;`, recover with `,`.
 
 Expected result: recovery becomes automatic instead of frustrating.
+
+### Scenario 11 - Jump List Navigation
+
+Start at the top of the practice area. Make several jumps using `gd`, `/`, and `G`. Then retrace your steps with `<C-o>` and move forward again with `<C-i>`.
+
+Practice area:
+
+```ts
+const MAX_RETRIES = 5
+
+interface CacheEntry {
+  key: string
+  value: unknown
+  ttl: number
+}
+
+function buildCacheKey(roomId: string, suffix: string): string {
+  return `${roomId}:${suffix}`
+}
+
+function fetchWithRetry(url: string, retries = MAX_RETRIES): Promise<Response> {
+  if (retries <= 0) {
+    throw new Error("Max retries exceeded")
+  }
+  return fetch(url).catch(() => fetchWithRetry(url, retries - 1))
+}
+
+function invalidateCache(entry: CacheEntry): void {
+  if (entry.ttl <= 0) {
+    delete globalCache[entry.key]
+  }
+}
+
+const globalCache: Record<string, CacheEntry> = {}
+```
+
+Steps:
+
+1. Place cursor on `MAX_RETRIES` in `fetchWithRetry` and press `gd` to jump to its definition at the top.
+2. Press `/CacheEntry<CR>` to search for `CacheEntry` — you land on the interface.
+3. Press `G` to jump to the bottom of the file.
+4. Press `/invalidateCache<CR>` to jump to that function.
+5. Now press `<C-o>` — you return to the bottom (`G` position).
+6. Press `<C-o>` again — you return to `CacheEntry`.
+7. Press `<C-o>` again — you return to `MAX_RETRIES` definition.
+8. Press `<C-i>` — you move forward to `CacheEntry`.
+9. Press `<C-i>` again — you move forward to the bottom.
+
+Required moves: `gd`, `/`, `G`, `<C-o>`, `<C-i>`.
+
+Expected result: you can freely retrace and replay your jump history without remembering line numbers.
+
+### Scenario 12 - Screen Positioning After Jumps
+
+After jumping to a target with Flash or search, use `zt`, `zz`, or `zb` to reposition the viewport so the target line is comfortable to read in context.
+
+Practice area (imagine this block is embedded deep in a 500-line file):
+
+```ts
+// --- line 180 ---
+function processQueue(queue: Task[]): void {
+  for (const task of queue) {
+    if (task.status === "pending") {
+      executeTask(task)
+    }
+  }
+}
+
+// --- line 220 ---
+function executeTask(task: Task): void {
+  const result = task.handler(task.payload)
+  if (result.success) {
+    task.status = "done"
+  } else {
+    task.status = "failed"
+    scheduleRetry(task)
+  }
+}
+
+// --- line 260 ---
+function scheduleRetry(task: Task): void {
+  if (task.retryCount < MAX_RETRIES) {
+    task.retryCount++
+    task.status = "pending"
+    queue.push(task)
+  }
+}
+```
+
+Steps:
+
+1. From the top of the file, press `/processQueue<CR>` to jump to that function.
+2. Press `zz` to center the function signature on screen — now you see context above and below.
+3. Press `/scheduleRetry<CR>` to jump to the retry function.
+4. Press `zt` to push it to the top of the screen — you can now read the full function body below.
+5. Press `<C-o>` to return to `processQueue`.
+6. Press `zb` to push it to the bottom — you can now see everything that came before it.
+
+Required moves: `/`, `zz`, `zt`, `zb`, `<C-o>`.
+
+Expected result: you control where the target sits on screen after each jump, giving yourself the best reading context.
+
+### Scenario 13 - Sentence And Paragraph Motions
+
+Navigate a prose document using sentence and paragraph motions instead of line-by-line movement.
+
+Practice area:
+
+```md
+## Architecture Overview
+
+The system uses an event-driven approach. Each incoming request is placed on a queue.
+Workers consume tasks from the queue in order. Failed tasks are retried up to five times.
+
+## Deployment
+
+The service runs in three regions. Each region has its own cache layer.
+Invalidation messages propagate across regions within two seconds. Monitoring
+dashboards track cache hit rates per region.
+
+## Security
+
+All endpoints require authentication. Tokens expire after one hour.
+Refresh tokens are rotated on each use. Rate limiting applies per client ID.
+```
+
+Steps:
+
+1. Place cursor at the top of the block.
+2. Press `)` repeatedly — the cursor jumps forward one sentence at a time: "Each incoming request...", "Workers consume...", "Failed tasks...".
+3. Press `(` to go back one sentence.
+4. Press `}` — the cursor jumps to the blank line after the first paragraph (past "Architecture Overview" content).
+5. Press `}` again — you land after the "Deployment" paragraph.
+6. Press `{` — you jump back to the start of the "Deployment" paragraph.
+7. Press `{` again — you return to the start of "Architecture Overview" content.
+
+Required moves: `(`, `)`, `{`, `}`.
+
+Expected result: you can skip entire sentences or paragraphs in one keystroke, which is much faster than repeated `j` or `w` in prose-heavy files.
+
+### Scenario 14 - Flash Treesitter Mode
+
+Use `S` (Flash Treesitter select) to select syntactic nodes. Each successive press of `;` (or the label for the parent node) expands the selection to a larger containing node.
+
+Practice area:
+
+```ts
+function calculateDiscount(order: Order): number {
+  if (order.total > 100) {
+    const rate = order.membership === "premium" ? 0.2 : 0.1
+    const discount = order.total * rate
+    if (discount > 50) {
+      return 50
+    }
+    return discount
+  }
+  return 0
+}
+
+function applyDiscount(order: Order): Order {
+  const discount = calculateDiscount(order)
+  return {
+    ...order,
+    total: order.total - discount,
+    appliedDiscount: discount,
+  }
+}
+```
+
+Steps:
+
+1. Place cursor inside the expression `order.total * rate`.
+2. Press `S` — Flash highlights selectable treesitter nodes. Labels appear on syntactic boundaries.
+3. Select the label for the innermost expression `order.total * rate` — it becomes visually selected.
+4. Press `S` again (or expand) — the selection grows to the full statement `const discount = order.total * rate`.
+5. Expand again — the selection grows to the inner `if` block body.
+6. Expand again — the selection covers the entire `if (order.total > 100) { ... }` block.
+7. Expand once more — the entire function body is selected.
+
+Required moves: `S`, node label selection, expansion.
+
+Expected result: you can select precisely scoped syntactic regions (expression, statement, block, function) without manually positioning `v` and motions.
 
 ## Real-World Drill
 

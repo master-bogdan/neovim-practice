@@ -16,6 +16,13 @@ y + a + ( = yank around parentheses
 
 Operators say what to do. Motions and text objects say what to do it to.
 
+### When To Use Macros vs Dot vs Substitute
+
+- `.` (dot repeat): same single edit repeated at different locations
+- `q{reg}`: multi-step edit repeated identically across many targets
+- `:s` / `:%s`: pattern-based text transformation across lines or the whole file
+- `cgn`: change next search match (hybrid approach — make one edit, then `.` repeats on the next match)
+
 ## Keymaps
 
 Operators and edits:
@@ -36,13 +43,35 @@ Operators and edits:
 - `<C-r>` - redo
 - `.` - repeat last change
 
+Macros:
+- `q{a-z}` - record macro into register (press `q` again to stop recording)
+- `@{a-z}` - play macro from register
+- `@@` - repeat last macro
+- `{count}@{a-z}` - play macro N times (e.g. `5@a` plays register `a` five times)
+
 Registers:
 - `"` - register prefix (type before `y`, `d`, `c`, `p`)
+- `"` + register + operator - use specific register (e.g. `"byiw` yanks word into register `b`)
 - `"ayy` - yank current line into register `a`
 - `"ap` - paste from register `a`
 - `"_d{motion}` - delete into black hole register (does not overwrite yank)
 - `"+y{motion}` - yank to system clipboard
-- `:registers` - inspect all registers
+- `:registers` - view all registers (numbered 0-9, named a-z, special +, _, %)
+
+Delete/change to search pattern:
+- `d/{pattern}` - delete from cursor to the next match of {pattern} (exclusive)
+- `c/{pattern}` - change from cursor to the next match of {pattern} (exclusive, enters Insert mode)
+
+Case manipulation:
+- `~` - toggle case of character under cursor and advance
+- `g~{motion}` - toggle case over motion (e.g. `g~w` toggles case of word)
+- `gU{motion}` - uppercase over motion (e.g. `gUiw` uppercases word)
+- `gu{motion}` - lowercase over motion (e.g. `guap` lowercases paragraph)
+
+Insert mode shortcuts:
+- `<C-u>` - delete from cursor to start of line (insert mode)
+- `<C-w>` - delete word backward (insert mode)
+- `<C-o>` - execute one Normal mode command then return to Insert mode
 
 Text objects (combine with operators: `d`, `c`, `y`, `v`):
 - `iw` - inner word (no surrounding whitespace)
@@ -439,6 +468,201 @@ Step-by-step:
 
 Expected result: you can recover any previously yanked text, not just the last one.
 
+### Scenario 12 - Recording And Playing Macros
+
+Record a macro that transforms a plain variable declaration into an exported typed const, then replay it on multiple lines.
+
+Practice area:
+
+```ts
+let name = "alice"
+let name = "bob"
+let name = "carol"
+let name = "dave"
+let name = "eve"
+let name = "frank"
+```
+
+Step-by-step:
+1. Put cursor on line 1: `gg`
+2. Start recording into register `a`: `qa`
+3. Go to beginning of line: `0`
+4. Change `let` to `export const`: `cw` then type `export const`, press `<Esc>`
+5. Move to the variable name: `w`
+6. Uppercase the word: `gUiw`
+7. Move to end of `=` area, go to the space before the value: `f=`
+8. Insert type annotation before `=`: `i: string `, press `<Esc>`
+9. Move down one line: `j`
+10. Stop recording: `q`
+11. Replay the macro 5 times for the remaining lines: `5@a`
+
+Expected result:
+
+```ts
+export const NAME: string = "alice"
+export const NAME: string = "bob"
+export const NAME: string = "carol"
+export const NAME: string = "dave"
+export const NAME: string = "eve"
+export const NAME: string = "frank"
+```
+
+### Scenario 13 - Registers Deep Dive
+
+Understand how numbered registers, named registers, and special registers work to prevent losing yanked text.
+
+Practice area:
+
+```ts
+const important = "keep this value"
+const trash = "delete me"
+const target = ""
+```
+
+Step-by-step:
+1. Put cursor on `"keep this value"`: `/keep<Enter>`
+2. Yank inside quotes into named register `a`: `"ayi"`
+3. Move to line 2: `j`
+4. Delete the entire line (this goes into `"1` numbered register): `dd`
+5. Check registers to see the state: `:registers` then press `q` to close
+   - Register `a` still holds `keep this value`
+   - Register `1` holds the deleted line
+   - Register `0` holds the last yank (also `keep this value`)
+6. Move cursor inside the empty quotes on `target`: `f"`then `l`
+7. Paste from named register `a`: `"ap`
+
+Expected result:
+
+```ts
+const important = "keep this value"
+const target = "keep this value"
+```
+
+Why this matters: deleting text normally overwrites the unnamed register (`""`), which makes pasting a previous yank impossible without named registers or yanky.nvim. Named registers (`"a`-`"z`) survive any number of intermediate deletes. The `"0` register always holds the last yank (not delete), which is another way to solve this.
+
+### Scenario 14 - Delete And Change To Search Pattern
+
+Use `d/{pattern}` and `c/{pattern}` to delete or change up to a known marker in the buffer.
+
+Practice area:
+
+```ts
+function processData() {
+  const garbage = "remove everything from here"
+  const moreGarbage = null
+  function innerHelper() {
+    return true
+  }
+  return finalResult
+}
+```
+
+Step-by-step:
+1. Put cursor on the `c` of `const garbage`: `/const garbage<Enter>`
+2. Delete from cursor up to (but not including) `function innerHelper`: `d/function inner<Enter>`
+   - This removes `const garbage...` and `const moreGarbage...` lines and any whitespace between
+3. Now try `c/{pattern}`: undo with `u`, put cursor on `"remove`: `f"`
+4. Change from `"remove` up to the next closing paren: `c/)<Enter>`
+5. Type `"cleaned"`, press `<Esc>`
+
+Expected result (after step 2):
+
+```ts
+function processData() {
+  function innerHelper() {
+    return true
+  }
+  return finalResult
+}
+```
+
+Expected result (after steps 4-5, from original):
+
+```ts
+function processData() {
+  const garbage = "cleaned")
+  const moreGarbage = null
+  function innerHelper() {
+    return true
+  }
+  return finalResult
+}
+```
+
+### Scenario 15 - Case Manipulation
+
+Use case-toggle operators to fix inconsistent casing in a file.
+
+Practice area:
+
+```ts
+const userName = "alice"
+const TEMP_value = 42
+const MyComponent = "button"
+const ALLUPPER = true
+const alllower = false
+```
+
+Step-by-step:
+1. Put cursor on `userName`: `/userName<Enter>`
+2. Uppercase the entire word: `gUiw` (result: `USERNAME`)
+3. Undo: `u`
+4. Toggle the case of just the `u`: move cursor to `u`, press `~` (result: `UserName`)
+5. Move to `TEMP_value` on line 2: `j0w`
+6. Lowercase the whole word: `guiw` (result: `temp_value`)
+7. Undo: `u`
+8. Uppercase just the second part: put cursor on `v` in `value`, press `gUw` (result: `TEMP_VALUE`)
+9. Move to `ALLUPPER` on line 4: `/ALLUPPER<Enter>`
+10. Lowercase it: `guiw` (result: `allupper`)
+11. Move to `alllower` on line 5: `j0w`
+12. Uppercase it: `gUiw` (result: `ALLLOWER`)
+13. Toggle entire word case: `g~iw` (result: `alllower` again since all caps become all lower)
+
+Key combinations to remember:
+- `gUiw` - uppercase a word
+- `guiw` - lowercase a word
+- `g~iw` - toggle case of a word
+- `gUap` - uppercase a paragraph
+- `guap` - lowercase a paragraph
+- `~` - toggle single character
+
+### Scenario 16 - Insert Mode Shortcuts
+
+Practice efficient text editing without leaving Insert mode unnecessarily.
+
+Practice area:
+
+```ts
+const wrongVariable = "this whole line needs retyping"
+const anotherMistake = "just the last word is wrogn"
+```
+
+Step-by-step:
+1. Put cursor on line 1 and enter insert mode at end: `A`
+2. Delete back to line start (clear the value you just typed): `<C-u>`
+   - The line content before cursor is deleted; you remain in Insert mode
+3. Type the replacement: `const correctVariable = "fixed"`, press `<Esc>`
+4. Move to line 2, enter insert mode at the end: `jA`
+5. Delete just the last word (`wrogn`): `<C-w>`
+6. Type the corrected word: `wrong`, press `<Esc>`
+7. Now practice `<C-o>` — enter insert mode: `A`
+8. Without leaving insert mode, jump to beginning of line: `<C-o>0`
+   - You executed one Normal mode command (`0`) and returned to Insert mode
+9. Press `<Esc>` when done
+
+When to stay in Insert mode:
+- Fixing a typo in the word you just typed: `<C-w>` then retype
+- Clearing a line to start over: `<C-u>`
+- Need one quick Normal command (like saving, scrolling, or jumping): `<C-o>{cmd}`
+- Faster than: `<Esc>`, command, `i` (3 keystrokes vs 2)
+
+Expected result:
+
+```ts
+const correctVariable = "fixed"
+const anotherMistake = "just the last word is wrong"
+```
+
 ## Real-World Drill
 
 Open a code file and do this sequence without looking anything up:
@@ -453,6 +677,10 @@ Open a code file and do this sequence without looking anything up:
 8. Make an edit, move to a similar target, press `.`.
 9. Undo with `u`, then redo with `<C-r>`.
 10. Open yank history with `<leader>p` and inspect what is there.
+11. Record a macro that adds a prefix to a line, replay it with `5@a`.
+12. Delete to a search pattern with `d/pattern`.
+13. Uppercase a word with `gUiw`, then lowercase it back with `guiw`.
+14. In Insert mode, delete a word with `<C-w>` and use `<C-o>` for one Normal command.
 
 ## Troubleshooting / Verify With Which-Key
 

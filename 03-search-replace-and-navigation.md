@@ -16,6 +16,19 @@ Project or workspace: LazyVim search pickers, grep, diagnostics, symbols
 
 Use the smallest search scope that gets you to the target.
 
+### Search and Replace Decision Tree
+
+Pick the right tool based on what you need:
+
+```text
+Single occurrence             -> /pattern + cgn
+All occurrences, same text    -> :%s/old/new/g
+Selective (some but not all)  -> cgn + . to repeat (n to skip one)
+Across project files          -> <leader>sg + :cdo s/old/new/g | update
+Pattern-based line operations -> :g/pattern/command
+Within a specific range       -> :{range}s/old/new/g
+```
+
 ## Keymaps
 
 Buffer search:
@@ -23,10 +36,18 @@ Buffer search:
 - `?pattern` - search backward
 - `n` - next match
 - `N` - previous match
-- `*` - search word under cursor forward
-- `#` - search word under cursor backward
+- `*` - search word under cursor forward (adds `\<word\>` boundaries)
+- `#` - search word under cursor backward (adds `\<word\>` boundaries)
+- `gn` - select next search match (visual motion)
+- `cgn` - change next search match
+- `dgn` - delete next search match
+- `.` after `cgn` - repeat the change on the next match
 - `<Esc>` - escape and clear search highlight in LazyVim
 - `<leader>ur` - redraw / clear search highlight / diff update
+
+Search modifiers:
+- `\c` - force case-insensitive inside a search pattern (e.g. `/\cerror`)
+- `\C` - force case-sensitive inside a search pattern (e.g. `/\CError`)
 
 Substitute:
 - `:s/foo/bar` - replace first match on current line
@@ -35,7 +56,19 @@ Substitute:
 - `:%s/foo/bar/gc` - replace all matches with confirmation
 - `:s//bar/` - replace last searched pattern on current line
 - `:%s//bar/g` - replace last searched pattern in file
+- `:{range}s/foo/bar/g` - replace within a specific line range
 - Visual selection then `:s/foo/bar/g` - replace only selected lines
+
+Global commands:
+- `:g/{pattern}/{cmd}` - execute command on every line matching pattern
+- `:v/{pattern}/{cmd}` - execute command on every line NOT matching pattern
+- `:g/pattern/d` - delete all matching lines
+- `:g/pattern/t$` - copy all matching lines to end of file
+
+Quickfix batch operations:
+- `:vimgrep /pattern/ **/*` - populate quickfix list from a pattern across files
+- `:cdo {cmd}` - run a command on each quickfix entry
+- `:cfdo {cmd}` - run a command on each quickfix file (once per file)
 
 LazyVim search and pickers:
 - `<leader><space>` - find files in root
@@ -293,6 +326,219 @@ diagnostic
 ```
 
 Expected result: picker shows matches across chapter files, not just the current buffer.
+
+### Scenario 11 - The cgn Workflow
+
+The most powerful search-and-replace method for selective changes. Search for `oldHandler`, use `cgn` to change the first match to `newHandler`, then press `.` to repeat on the next match or `n` to skip one.
+
+Practice area:
+
+```ts
+const oldHandler = createOldHandler()
+app.use("/login", oldHandler)
+app.use("/logout", oldHandler)
+app.use("/health", oldHandler)  // keep this one as oldHandler
+app.use("/signup", oldHandler)
+app.use("/reset", oldHandler)
+app.use("/debug", oldHandler)   // keep this one as oldHandler
+app.use("/verify", oldHandler)
+```
+
+Required moves:
+1. `/oldHandler` to search for the pattern (or position cursor on `oldHandler` and press `*`).
+2. `cgn` to select and change the first match — type `newHandler`, then press `<Esc>`.
+3. `.` to repeat the change on the next match.
+4. `.` again on the third match.
+5. `n` to skip the fourth match (health — keep it).
+6. `.` to change the fifth match.
+7. `.` to change the sixth match.
+8. `n` to skip the seventh match (debug — keep it).
+9. `.` to change the eighth match.
+
+Expected result:
+
+```ts
+const newHandler = createNewHandler()
+app.use("/login", newHandler)
+app.use("/logout", newHandler)
+app.use("/health", oldHandler)  // keep this one as oldHandler
+app.use("/signup", newHandler)
+app.use("/reset", newHandler)
+app.use("/debug", oldHandler)   // keep this one as oldHandler
+app.use("/verify", newHandler)
+```
+
+Why this works: `cgn` combines "change" with "select next match". After the first change, `.` repeats both the selection and the replacement text. This is faster than `:%s` with confirm because you stay in normal mode and use muscle memory (`.` and `n`).
+
+### Scenario 12 - Batch Operations With :cdo
+
+Use `<leader>sg` to grep a pattern across the project into the quickfix list, then run a substitute command on every quickfix entry at once.
+
+Practice area (imagine these are three separate files):
+
+```text
+-- file: src/api/users.ts
+const endpoint = "/api/v1/users"
+
+-- file: src/api/rooms.ts
+const endpoint = "/api/v1/rooms"
+
+-- file: src/api/billing.ts
+const endpoint = "/api/v1/billing"
+```
+
+Required moves:
+1. `<leader>sg` and type `/api/v1/` to find all occurrences across the project.
+2. Open the quickfix list with `<leader>sq` to verify the matches.
+3. Run `:cdo s/\/api\/v1\//\/api\/v2\//g | update` to replace in every match and save.
+
+Alternative with a cleaner delimiter: `:cdo s#/api/v1/#/api/v2/#g | update`.
+
+Expected result:
+
+```text
+-- file: src/api/users.ts
+const endpoint = "/api/v2/users"
+
+-- file: src/api/rooms.ts
+const endpoint = "/api/v2/rooms"
+
+-- file: src/api/billing.ts
+const endpoint = "/api/v2/billing"
+```
+
+Why this works: `<leader>sg` populates the quickfix list. `:cdo` iterates over every entry and runs the substitute command. The `| update` saves each file after the change.
+
+### Scenario 13 - Global Commands (:g and :v)
+
+Use `:g` to act on every matching line and `:v` to act on every non-matching line.
+
+Practice area:
+
+```ts
+import { format } from "date-fns"
+import { z } from "zod"
+
+export function validateInput(data: unknown) {
+  console.log("validateInput called", data)
+  const schema = z.object({ name: z.string() })
+  // TODO: add email validation
+  const result = schema.safeParse(data)
+  console.log("parse result:", result)
+  if (!result.success) {
+    // TODO: return structured errors
+    console.log("validation failed")
+    throw new Error("invalid input")
+  }
+  // old: return data
+  // old: return null
+  return result.data
+}
+
+export function formatDate(ts: number) {
+  console.log("formatDate called", ts)
+  // TODO: handle timezone
+  return format(new Date(ts), "yyyy-MM-dd")
+}
+```
+
+Required moves (practice each independently):
+
+1. Delete all console.log lines: `:g/console\.log/d`
+2. Delete all commented-out old code: `:g/\/\/ old:/d`
+3. Copy all TODO lines to end of file: `:g/TODO/t$`
+4. Keep only export lines (delete everything else): `:v/export/d`
+
+Expected result after step 1 (delete console.logs):
+
+```ts
+import { format } from "date-fns"
+import { z } from "zod"
+
+export function validateInput(data: unknown) {
+  const schema = z.object({ name: z.string() })
+  // TODO: add email validation
+  const result = schema.safeParse(data)
+  if (!result.success) {
+    // TODO: return structured errors
+    throw new Error("invalid input")
+  }
+  // old: return data
+  // old: return null
+  return result.data
+}
+
+export function formatDate(ts: number) {
+  // TODO: handle timezone
+  return format(new Date(ts), "yyyy-MM-dd")
+}
+```
+
+Why this works: `:g/pattern/d` means "on every line matching pattern, delete it." `:v` is the inverse — it matches lines that do NOT contain the pattern. `:g/pattern/t$` copies (`:t`) each matching line to the last line (`$`).
+
+### Scenario 14 - Word Search With * And #
+
+Position the cursor on a variable name and use `*` to find all occurrences with automatic word boundaries.
+
+Practice area:
+
+```ts
+function processItem(item: Item) {
+  const itemId = item.id
+  const itemName = item.name
+  logItem(item)
+  if (isValidItem(item)) {
+    saveItem(item)
+  }
+  return item
+}
+```
+
+Required moves:
+1. Place cursor on the standalone `item` (for example, the parameter name on line 1).
+2. Press `*` to search forward — the cursor jumps to the next whole-word match of `item`.
+3. Press `n` to continue forward through matches.
+4. Press `N` to go backward.
+5. Press `#` to reverse direction (search backward from current position).
+
+Key difference from `/item`: pressing `*` searches for `\<item\>` which matches the whole word `item` but NOT `itemId` or `itemName`. A manual `/item` would match inside those longer words too.
+
+Expected result: only standalone `item` occurrences are highlighted, not `itemId`, `itemName`, `logItem`, `isValidItem`, or `saveItem`.
+
+### Scenario 15 - Case-Sensitive And Insensitive Search
+
+Use `\c` and `\C` modifiers inside search patterns to control case matching regardless of your `ignorecase`/`smartcase` settings.
+
+Practice area:
+
+```ts
+class ErrorHandler {
+  handleError(error: Error) {
+    const ERROR_CODE = "ERR_VALIDATION"
+    console.error("An error occurred:", error.message)
+    if (error instanceof TypeError) {
+      return this.handleTypeError(error)
+    }
+    throw new Error(`Unhandled error: ${ERROR_CODE}`)
+  }
+}
+```
+
+Required moves:
+
+1. `/\cerror` — finds ALL case variants: `Error`, `error`, `ERROR`, `handleError`, `TypeError`, etc.
+2. Press `n` repeatedly to see every match regardless of case.
+3. Now search `/\CError` — finds only exact case `Error` (capital E, lowercase rror).
+4. Press `n` — skips `error`, `ERROR`, and matches only `Error`.
+5. Try `/\CERROR` — finds only the all-caps `ERROR_CODE` and `ERROR` occurrences.
+
+How `\c` and `\C` interact with settings:
+- `ignorecase` makes all searches case-insensitive by default.
+- `smartcase` makes searches case-sensitive if the pattern contains uppercase.
+- `\c` anywhere in a pattern forces case-insensitive, overriding both settings.
+- `\C` anywhere in a pattern forces case-sensitive, overriding both settings.
+
+Expected result: `\c` matches 10+ occurrences of error/Error/ERROR, while `\C` with exact case matches only the specific variant you typed.
 
 ## Real-World Drill
 

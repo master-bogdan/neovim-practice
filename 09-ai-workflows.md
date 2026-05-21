@@ -32,8 +32,8 @@ Your config has these custom prompts pre-defined — use them by name:
 
 CopilotChat:
 - `<leader>aa` - toggle CopilotChat window
-- `<leader>ax` - clear CopilotChat context and history
-- `<leader>aq` - quick chat (inline prompt without opening full window)
+- `<leader>ax` - clear chat history (reset context) — use when responses feel stale or context-polluted
+- `<leader>aq` - quick chat (ask without opening full window) — for fast one-off questions inline
 
 Custom prompts (works on visual selection or current buffer):
 - `<leader>ae` - Explain selected code
@@ -235,6 +235,174 @@ Step-by-step:
 
 Expected result: optimization comes with an explanation, not just a code replacement.
 
+### Scenario 8 - Chaining AI Requests (Review, Fix, Test)
+
+Practice area:
+
+```ts
+function getItemsInRange(items: string[], start: number, end: number): string[] {
+  const result: string[] = []
+  for (let i = start; i <= end; i++) {
+    result.push(items[i])
+  }
+  return result
+}
+// Bug: if end >= items.length, this accesses undefined indices (off-by-one)
+```
+
+Step-by-step:
+1. Select the function (including the comment) with `V` then `6j`.
+2. Press `<leader>ar` to run Review. Read the finding — it should flag the out-of-bounds access.
+3. Keep the same selection active (re-select with `gv` if needed).
+4. Press `<leader>af` to run Fix. Read the suggested fix — it should add a bounds check or clamp `end`.
+5. Apply the fix manually (e.g., change the loop condition to `i <= Math.min(end, items.length - 1)`).
+6. Re-select the fixed function with `V` and `j` movements.
+7. Press `<leader>at` to run Tests. Read generated tests — expect edge cases for `end` beyond array length.
+8. Copy the tests into your test file and verify they pass.
+
+Expected result: the full chain review, fix, test resolves the bug from discovery to verified fix without leaving the editor.
+
+### Scenario 9 - Whole Buffer vs Visual Selection Context
+
+Practice area (imagine this is a full module with multiple functions):
+
+```ts
+// utils/math.ts
+export function add(a: number, b: number): number {
+  return a + b
+}
+
+export function multiply(a: number, b: number): number {
+  return a * b
+}
+
+export function factorial(n: number): number {
+  if (n <= 1) return 1
+  return n * factorial(n - 1)
+}
+```
+
+Step-by-step — targeted question with selection:
+1. Put cursor on the `factorial` function.
+2. Press `V` then `3j` to select only `factorial`.
+3. Press `<leader>ae` to run Explain.
+4. Observe: the explanation focuses solely on recursion, base case, and stack depth.
+
+Step-by-step — architectural question with whole buffer:
+1. Press `<Esc>` to clear the visual selection.
+2. Without selecting anything, press `<leader>ar` to run Review on the whole buffer.
+3. Observe: the review covers the module as a whole — missing error handling in `factorial` for negative numbers, whether the module cohesion makes sense, etc.
+
+When to use each:
+- **Visual selection** — targeted questions about a specific function, block, or expression.
+- **Whole buffer** — architectural questions, module-level review, or when you want cross-function analysis.
+
+Expected result: you see concretely that selection narrows the response and whole-buffer broadens it.
+
+### Scenario 10 - Quick Chat For Fast Questions
+
+Practice area:
+
+```ts
+function memoize<T extends (...args: string[]) => unknown>(fn: T): T {
+  const cache = new Map<string, unknown>()
+  return function (...args: Parameters<T>) {
+    const key = args.join(",")
+    if (cache.has(key)) return cache.get(key)
+    const result = fn(...args)
+    cache.set(key, result)
+    return result
+  } as T
+}
+
+function binarySearch(arr: number[], target: number): number {
+  let lo = 0, hi = arr.length - 1
+  while (lo <= hi) {
+    const mid = (lo + hi) >>> 1
+    if (arr[mid] === target) return mid
+    else if (arr[mid] < target) lo = mid + 1
+    else hi = mid - 1
+  }
+  return -1
+}
+
+function throttle(fn: () => void, limit: number): () => void {
+  let inThrottle = false
+  return function () {
+    if (!inThrottle) {
+      fn()
+      inThrottle = true
+      setTimeout(() => (inThrottle = false), limit)
+    }
+  }
+}
+```
+
+Step-by-step:
+1. Put cursor inside `memoize`. Press `<leader>aq`. Type: `What does this function do in one sentence?` Submit.
+2. Read the inline response — it should be short and precise.
+3. Put cursor inside `binarySearch`. Press `<leader>aq`. Type: `What is the time complexity?` Submit.
+4. Read the response — expect O(log n).
+5. Put cursor inside `throttle`. Press `<leader>aq`. Type: `How does this differ from debounce?` Submit.
+6. Read the response — expect an explanation about immediate execution vs delayed execution.
+
+Expected result: quick chat answers appear fast without opening a full panel, suitable for micro-questions during coding.
+
+### Scenario 11 - When NOT To Trust AI Suggestions
+
+Practice area:
+
+```ts
+// Scenario A: Ask for optimization of this function
+function removeDuplicateObjects(arr: { id: number; name: string }[]): { id: number; name: string }[] {
+  return arr.filter((item, index, self) =>
+    index === self.findIndex((t) => t.id === item.id)
+  )
+}
+
+// Scenario B: A function using a project-specific utility
+import { validateSchema } from "../internal/validator"
+
+function processPayload(data: unknown): boolean {
+  return validateSchema(data, "user-profile-v2")
+}
+```
+
+Step-by-step — verify optimization suggestions:
+1. Select `removeDuplicateObjects` with `V` then `3j`.
+2. Press `<leader>ao` to run Optimize.
+3. Read the suggestion carefully. Common AI mistakes here:
+   - May suggest using `structuredClone` or `Array.from(new Set(...))` which does not work for objects.
+   - May suggest a library function like `_.uniqBy` without knowing if lodash is in your project.
+4. **Verify**: check if the suggested API exists by using `gd` (go to definition) or `:help` on any suggested function. Check your `package.json` for suggested libraries.
+
+Step-by-step — hallucinated function signatures:
+1. Select `processPayload` and the import with `V` then `4j`.
+2. Press `<leader>ae` to run Explain.
+3. The AI may describe `validateSchema` with invented parameters or behavior because it cannot see the internal module.
+4. **Verify**: use `gd` on `validateSchema` to jump to its actual definition. Compare the real signature with what the AI described.
+
+Red flags to watch for:
+- AI suggests a function/method that does not appear in your type definitions.
+- AI suggests a package you have not installed.
+- AI suggests a deprecated API (check your project's TypeScript version).
+- AI gives confident advice about internal code it has never seen.
+
+Expected result: you develop the habit of verifying AI output against LSP, types, and actual source — treating suggestions as hypotheses, not facts.
+
+## Mental Model: When To Use Each Prompt
+
+| Prompt | When to use | Example situation |
+|--------|-------------|-------------------|
+| `Explain` | Understanding unfamiliar code | Onboarding to a new codebase, reviewing a PR from a teammate, encountering a pattern you have not seen before |
+| `Review` | Checking for bugs, security issues, code smells | Before approving a PR, after writing a complex function, when code feels fragile |
+| `Fix` | When LSP shows a diagnostic you do not understand | Red underline with a cryptic TypeScript error, a lint rule you have not encountered |
+| `Tests` | After writing a function, before committing | You wrote a utility and want coverage before pushing, or you want to understand edge cases |
+| `Commit` | After staging changes, before writing message | You have a clean diff staged and want a conventional commit message that describes the why |
+| `Optimize` | When profiling shows a bottleneck, not premature optimization | A function shows up in profiling, a loop is visibly O(n^2), or you hit a performance regression |
+
+Key principle: do NOT use `Optimize` on code that is not proven slow. Premature optimization makes code harder to read for no measurable benefit. Use `Review` first to find real problems, then `Optimize` only on confirmed bottlenecks.
+
 ## Real-World Drill
 
 Do this sequence on a real source file:
@@ -248,6 +416,81 @@ Do this sequence on a real source file:
 7. Press `<leader>ac` to generate a commit message (stage changes first).
 8. Review the message and use it in your commit.
 
+## Inline Copilot Completions
+
+Beyond CopilotChat, you also have inline ghost text completions that appear as you type. These are faster for small suggestions — single lines, function signatures, or boilerplate.
+
+### Keymaps
+
+- `<Tab>` - accept the full ghost text suggestion
+- `<M-]>` - cycle to next suggestion (Alt + ])
+- `<M-[>` - cycle to previous suggestion (Alt + [)
+- `<C-]>` - dismiss the current suggestion
+- `<M-Right>` - accept next word only (partial accept)
+- `<M-l>` - accept next line only (partial accept)
+
+### When To Use Inline vs CopilotChat
+
+| Situation | Tool |
+|-----------|------|
+| Completing a function signature | Inline (Tab) |
+| Writing boilerplate (imports, types) | Inline (Tab) |
+| Generating a whole function from a comment | Inline, then review |
+| Explaining existing code | CopilotChat (`<leader>ae`) |
+| Reviewing for bugs | CopilotChat (`<leader>ar`) |
+| Generating tests from implementation | CopilotChat (`<leader>at`) |
+
+### Practice Scenario — Partial Accept Workflow
+
+Practice area:
+
+```ts
+// Type this function signature, then use partial accept to control the completion:
+function parseConfig(raw: string): Config {
+  // After typing this line, Copilot will suggest the body.
+  // Instead of accepting everything:
+  // 1. Press <M-Right> to accept one word at a time
+  // 2. Press <M-l> to accept one line at a time
+  // 3. Review as you go — reject with <C-]> if the suggestion diverges
+}
+
+// Type a comment, let Copilot suggest the implementation:
+// sort users by score descending, return top 5
+```
+
+Step-by-step:
+1. Open a new `.ts` file and type `function parseConfig(`
+2. Observe the ghost text suggestion appearing (dimmed text)
+3. Press `<M-Right>` to accept just the next word
+4. Press `<M-Right>` again to accept another word
+5. Press `<M-l>` to accept the rest of the current line
+6. If the next line suggestion is wrong, press `<C-]>` to dismiss
+7. Press `<M-]>` to cycle to an alternative suggestion
+8. When satisfied, press `<Tab>` to accept the full remaining suggestion
+
+### Practice Scenario — Comment-Driven Completions
+
+```ts
+// Write a comment describing what you want, then let Copilot generate:
+
+// validate email format and return boolean
+
+// fetch user by id, throw if not found
+
+// retry a promise up to 3 times with exponential backoff
+```
+
+Step-by-step:
+1. Type the comment `// validate email format and return boolean`
+2. Press `Enter` to go to a new line
+3. Wait for ghost text to appear (the function implementation)
+4. Review the suggestion — check for correctness
+5. Press `<Tab>` to accept if it looks right
+6. If not, press `<M-]>` to see alternatives
+7. Repeat for the other two comments
+
+Key principle: treat inline completions as drafts. Always read before accepting. Partial accept (`<M-Right>`) is your best tool for maintaining control while still getting speed benefits.
+
 ## Troubleshooting / Verify With Which-Key
 
 - If `<leader>aa` does nothing, check `:Lazy` for `CopilotChat`.
@@ -256,3 +499,6 @@ Do this sequence on a real source file:
 - Search `<leader>sk` for `Copilot` or `Chat` to verify all mappings are registered.
 - If output is too broad, narrow the visual selection and re-run.
 - Treat all AI output as a draft — verify with LSP diagnostics and read the diff before applying.
+- **AI suggests code that doesn't compile** — after applying any AI suggestion, check for LSP diagnostics (`]d` to jump to errors). Run the type checker (`:!npx tsc --noEmit`) to verify. Never trust that generated code compiles until LSP confirms zero errors.
+- **Context is stale** — if responses reference code you already changed or seem confused about current state, press `<leader>ax` to clear chat history and reset context. Then re-select the fresh code and ask again.
+- **Response is too generic** — select a smaller, more specific code block instead of whole files. A 5-line selection produces more actionable output than a 200-line buffer. Add a specific question in the prompt rather than relying only on the prompt template.

@@ -20,9 +20,10 @@ Opening Octo:
 - `:Octo pr list` - list open PRs for current repo
 - `:Octo pr search` - search PRs by query
 - `:Octo issue list` - list open issues
-- `:Octo issue create` - create a new issue
+- `:Octo issue create` - create a new issue (opens interactive buffer for title, body, labels)
 - `:Octo pr create` - create a new PR
 - `:Octo pr checkout` - checkout the PR branch locally
+- `:Octo pr merge` - merge a PR (squash, rebase, or merge commit)
 
 Inside an Octo PR or issue buffer:
 - `<leader>po` - open in browser
@@ -199,6 +200,80 @@ Step-by-step:
 
 Expected result: AI review informs your GitHub review comment, all inside the editor.
 
+### Scenario 9 - Create An Issue From Neovim
+
+Step-by-step:
+1. Run `:Octo issue create<Enter>`.
+2. An interactive buffer opens with fields for title and body.
+3. Move to the title line, press `i`, type a descriptive title (e.g., "Bug: API returns 500 on empty payload").
+4. Move to the body section, press `i`, write a markdown description:
+   - Describe the bug: what you expected vs what happened.
+   - Include code blocks with triple backticks for reproduction steps.
+   - Add any relevant error messages.
+5. Press `<Esc>` when done editing.
+6. To add labels, run `:Octo label add<Enter>` and select from the list (e.g., "bug").
+7. Save and submit the issue by writing the buffer: `:w<Enter>`.
+
+Practice: while coding, if you hit an unexpected error in a dependency or your own code, immediately file it with `:Octo issue create` without switching to the browser.
+
+Expected result: a new issue appears on GitHub with your title, markdown body, and labels.
+
+### Scenario 10 - Full PR Review Checklist
+
+A structured approach to reviewing a PR thoroughly inside Octo:
+
+Step-by-step:
+1. Open the PR: `:Octo pr list<Enter>`, navigate with `j`/`k`, press `<Enter>`.
+2. **Read the description** — scroll with `<C-d>`/`<C-u>` to understand the purpose and context.
+3. **Check the file list for scope** — look at how many files are changed and whether the scope matches the PR title. Run `:Octo pr files<Enter>` or scroll to the file list.
+4. **Navigate each changed file** — press `]q` to jump to the first hunk, then continue with `]q` through all hunks. For each file, ask: does this change make sense?
+5. **Leave inline comments on concerns** — position cursor on a problematic line, press `<leader>ca`, enter Insert mode with `i`, type your concern, press `<Esc>`.
+6. **Check for missing tests** — look at the file list for `*_test.*` or `*.spec.*` files. If the PR adds a new API endpoint but no test file is in the diff, note this in a comment.
+7. **Approve or request changes**:
+   - If everything looks good: `<leader>va` to approve, then `<leader>vs` to submit.
+   - If changes are needed: `<leader>vr` to request changes, then `<leader>vs` to submit.
+
+Practice: review a PR that adds a new API endpoint. Verify it has input validation, error handling, and a corresponding test file.
+
+Expected result: a thorough review with inline comments and a clear approve/request-changes decision, all without leaving Neovim.
+
+### Scenario 11 - PR Creation To Merge Workflow
+
+End-to-end lifecycle of a PR without leaving Neovim:
+
+Step-by-step:
+1. **Create a branch** — open terminal with `<leader>ft`, run `git checkout -b feat/my-feature`, press `<C-\><C-n>` and close terminal.
+2. **Make changes and commit** — edit files, then open LazyGit with `<leader>gg`, stage files, write a commit message, press `c` to commit, press `q` to close.
+3. **Push the branch** — open terminal with `<leader>ft`, run `git push -u origin feat/my-feature`, close terminal.
+4. **Create the PR** — run `:Octo pr create<Enter>`. Fill in the title and description in the buffer that opens. Write with `:w<Enter>` to submit.
+5. **Wait for CI** — run `:Octo pr checks<Enter>` to see CI status. Repeat after a minute if still pending.
+6. **Mark ready for review** — if you created as draft, press `<leader>pv` to mark the PR as ready for review.
+7. **Approve** — if self-merge is allowed and reviews pass, press `<leader>va` then `<leader>vs`.
+8. **Merge** — run `:Octo pr merge<Enter>`. Choose squash, rebase, or merge commit when prompted.
+9. **Clean up** — open terminal, run `git checkout main && git pull`, close terminal.
+
+Expected result: the complete PR lifecycle from branch creation to merge happens inside the editor.
+
+### Scenario 12 - Octo + Local Editing
+
+Show how Octo diff view and local files relate — edit a file from a PR diff:
+
+Step-by-step:
+1. Open a PR: `:Octo pr list<Enter>`, select with `<Enter>`.
+2. Navigate to a diff hunk with `]q`.
+3. Press `<Enter>` on the hunk to open the file at that change.
+4. You are now in the actual local file (if the branch is checked out). Confirm with `:echo expand('%')`.
+5. Make your fix — press `i`, edit the code, press `<Esc>`.
+6. Save with `:w<Enter>`.
+7. Commit the fix — open LazyGit with `<leader>gg`, stage the file, commit with a message like "fix: address review comment", press `q`.
+8. Push — open terminal with `<leader>ft`, run `git push`, close terminal.
+9. Return to the PR buffer with `<leader>,` and select the Octo buffer.
+10. The PR on GitHub now reflects your new commit. Refresh with `:e<Enter>` or reopen with `:Octo pr list`.
+
+Practice: open a PR you own, find an issue in the diff, fix it locally, push, and confirm the PR updates.
+
+Expected result: you see the PR diff, fix code in the actual file, push, and the PR updates — seamless flow between review and editing.
+
 ## Real-World Drill
 
 Do this sequence for a real PR in one of your repositories:
@@ -224,3 +299,6 @@ Do this sequence for a real PR in one of your repositories:
 - Run `:Octo actions` inside any Octo buffer to see all available commands for that context.
 - Search `<leader>sk` for `Octo` to see all registered keymaps.
 - If comments fail to submit, check network connectivity and `gh` token scopes: `gh auth status`.
+- `<leader>ca` conflicts with LSP code action inside Octo buffer — if pressing `<leader>ca` triggers LSP code actions instead of adding a comment, use `:Octo comment add<Enter>` explicitly when inside PR buffers.
+- Can't see PR checks/CI status — run `:Octo pr checks<Enter>` to display the CI pipeline status (pass/fail/pending) for the current PR.
+- PR description is too long to read in buffer — use `zR` to unfold all folds, or scroll with `<C-d>`/`<C-u>`. You can also search within the buffer with `/keyword`.
