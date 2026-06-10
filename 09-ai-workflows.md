@@ -159,7 +159,7 @@ async function fetchUserData(userId: string) {
 ```
 
 Step-by-step:
-1. Select all lines of the function above with `V` then `5j`.
+1. Select all lines of the function above with `V` then `6j`.
 2. Press `<leader>ar` to run Review.
 3. Read findings — expect it to flag the SQL injection and missing cache invalidation.
 4. Do not apply any changes yet. Read only.
@@ -228,7 +228,7 @@ function findDuplicates(arr: number[]): number[] {
 ```
 
 Step-by-step:
-1. Select all lines of the function with `V` then `8j`.
+1. Select all lines of the function with `V` then `9j`.
 2. Press `<leader>ao` to run Optimize.
 3. Read the explanation of the performance tradeoff (O(n²) → O(n) with a Set).
 4. Decide whether to apply — check if the tradeoff matches your constraints.
@@ -251,7 +251,7 @@ function getItemsInRange(items: string[], start: number, end: number): string[] 
 ```
 
 Step-by-step:
-1. Select the function (including the comment) with `V` then `6j`.
+1. Select the function and the bug comment with `V` then `7j`.
 2. Press `<leader>ar` to run Review. Read the finding — it should flag the out-of-bounds access.
 3. Keep the same selection active (re-select with `gv` if needed).
 4. Press `<leader>af` to run Fix. Read the suggested fix — it should add a bounds check or clamp `end`.
@@ -369,7 +369,7 @@ function processPayload(data: unknown): boolean {
 ```
 
 Step-by-step — verify optimization suggestions:
-1. Select `removeDuplicateObjects` with `V` then `3j`.
+1. Select `removeDuplicateObjects` with `V` then `4j`.
 2. Press `<leader>ao` to run Optimize.
 3. Read the suggestion carefully. Common AI mistakes here:
    - May suggest using `structuredClone` or `Array.from(new Set(...))` which does not work for objects.

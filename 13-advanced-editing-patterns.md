@@ -62,7 +62,7 @@ Quickfix and batch operations:
 
 nvim-bqf (better quickfix):
 - `o` - open item and close quickfix
-- `<CR>` - open item
+- `<Enter>` - open item
 - `p` - toggle preview window for current item
 - `zf` - fuzzy filter quickfix entries
 - `zn` - create new quickfix list
@@ -292,9 +292,9 @@ Step-by-step:
 1. Open workspace diagnostics: `<leader>xX`
    - Trouble opens in the bottom panel (managed by edgy)
    - Diagnostics are grouped by file and severity
-2. Navigate within trouble: `j`/`k` to move, `<CR>` to jump to location
+2. Navigate within trouble: `j`/`k` to move, `<Enter>` to jump to location
 3. Filter to errors only: type `/error` within trouble to narrow down
-4. Jump to first error: `<CR>` on the item
+4. Jump to first error: `<Enter>` on the item
 5. Fix the issue in the source file
 6. Return to trouble: `<C-o>` or `<leader>xX`
 7. Move to next diagnostic: `]d` (works without trouble open too)
@@ -396,12 +396,12 @@ Step-by-step:
 Alternative using a macro on quickfix:
 1. `:copen` to open quickfix from a previous search
 2. Record a macro: `qa`
-3. Open the file: `<CR>`
+3. Open the file: `<Enter>`
 4. Go to top: `gg`
 5. Open line above: `O`
 6. Type the import: `import { Logger } from './logger'`
-7. Press `<Esc>`, save: `:w<CR>`
-8. Return to quickfix: `<C-o><C-o>` then `:cnext<CR>`
+7. Press `<Esc>`, save: `:w<Enter>`
+8. Return to quickfix: `<C-o><C-o>` then `:cnext<Enter>`
 9. Stop recording: `q`
 10. Replay: `5@a`
 
@@ -531,9 +531,9 @@ type Config struct {
 }
 ```
 
-Goal: Add `json:"fieldname"` tags to each field using block visual append.
+Goal: learn where block visual helps and where it stops. A block append can add common text to every field, but different `json:"fieldname"` tags need a macro or per-line edit because each tag value is different.
 
-Step-by-step:
+Block visual pass:
 1. Place cursor on the `Host` line
 2. Enter block visual: `<C-v>`
 3. Select down 7 lines to cover all fields: `7j`
@@ -541,16 +541,32 @@ Step-by-step:
 5. Append: `A`
 6. Type a space then a backtick: ` \``
 7. Press `<Esc>`
-   - All lines now have a trailing backtick (this is partial — you still need per-line content)
+   - All lines now have a trailing backtick. This proves block visual can add shared structure, but it cannot derive `host`, `port`, `database`, etc. for you.
 
-For truly different content per line, use a macro instead:
-1. Place cursor on the `Host` line: `/Host<CR>`
+Targeted macro pass for one field at a time:
+1. Place cursor on the `Host` line: `/Host<Enter>`
 2. Start recording: `qa`
 3. Go to end of line: `A`
 4. Type the tag: `` `json:"host"` ``
 5. Move down: `<Esc>j`
 6. Stop recording: `q`
-7. For subsequent lines, manually adjust (or use a smarter macro with word yank)
+7. On the `Port` line, repeat the shape manually with `A`, type `` `json:"port"` ``, then `<Esc>j`.
+8. Continue line by line, changing only the tag value.
+
+Expected result:
+
+```go
+type Config struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	Database string `json:"database"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	SSLMode  string `json:"ssl_mode"`
+	MaxConns int    `json:"max_conns"`
+	Timeout  int    `json:"timeout"`
+}
+```
 
 ### Scenario 13 - Quickfix With nvim-bqf Preview
 
@@ -565,7 +581,7 @@ Step-by-step:
    - `<Tab>` — mark/unmark entries for later filtering
    - `zf` — open fuzzy filter, type to narrow results
    - `zn` — create a new quickfix list from marked items
-   - `<CR>` — jump to the entry
+   - `<Enter>` — jump to the entry
 4. After reviewing and filtering, run `:cdo` only on the filtered set:
    ```vim
    :cdo s/TODO/DONE/g | update
@@ -594,11 +610,11 @@ Step-by-step:
 1. Grep for `const logger = console.log`: `<leader>sg`
 2. Send to quickfix: `<C-q>`
 3. In quickfix, go to first entry: `gg`
-4. Jump to it: `<CR>`
+4. Jump to it: `<Enter>`
 5. Record macro: `qa`
 6. Change from `=` to end of line: `f=lC Logger.getInstance()`
-7. Save the file: `<Esc>:w<CR>`
-8. Go to next quickfix entry: `:cnext<CR>`
+7. Save the file: `<Esc>:w<Enter>`
+8. Go to next quickfix entry: `:cnext<Enter>`
 9. Stop recording: `q`
 10. Replay for remaining entries: `10@a` (use a count larger than remaining entries — macro stops at end)
 
@@ -664,7 +680,7 @@ resource "aws_instance" "worker" {
 For this kind of edit (adding multi-line content), a macro is better than block visual:
 
 Step-by-step:
-1. Search for the closing brace pattern: `/^}<CR>`
+1. Search for the closing brace pattern: `/^}<Enter>`
 2. Record macro: `qa`
 3. Open a line above: `O`
 4. Type the tags block:

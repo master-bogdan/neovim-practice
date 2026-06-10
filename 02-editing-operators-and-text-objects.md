@@ -188,12 +188,13 @@ const level = "warnong"
 ```
 
 Step-by-step:
-1. Put cursor on `o` in `pendong` — press `f` then `o` to jump: `fo`
-2. Press `r` then `i` to replace: `ri`
-3. Move to next line: `j`
-4. Press `fo` to jump to `o` in `archove`, then `ri`
-5. Move to next line: `j`
-6. Press `fo` to jump to `o` in `warnong`, then `ri`
+1. Put cursor at the start of line 1 and search for the typo: `/pendong<Enter>`
+2. Press `fo` to jump to the `o` in `pendong`
+3. Press `r` then `i` to replace: `ri`
+4. Move to the next typo: `/archove<Enter>`
+5. Press `fo` to jump to `o` in `archove`, then `ri`
+6. Move to the next typo: `/warnong<Enter>`
+7. Press `fo` to jump to `o` in `warnong`, then `ri`
 
 Expected result:
 
@@ -216,10 +217,12 @@ const final_status = payload.final_status
 ```
 
 Step-by-step:
-1. Put cursor on `status` in `request_status` (left side): `fst` or `/request_status<Enter>`
-2. Press `cw` to change forward word, type `state`, press `<Esc>`
-3. Move to next line `j`, find `status` on left side, repeat with `.`
-4. Repeat for third line
+1. Start at the beginning of line 1.
+2. Press `f_`, then `l`, to land on `status` in the left-side `request_status`.
+3. Press `cw`, type `state`, then press `<Esc>`.
+4. Move to the next line with `j`, then press `0`, `f_`, and `l` to land on the left-side `status`.
+5. Press `.` to repeat the same change.
+6. Repeat step 4 and step 5 for the third line.
 
 Expected result:
 
@@ -241,11 +244,13 @@ const enabledJobs = ["fetch", "debug_fetch", "publish", "debug_publish"]
 ```
 
 Step-by-step:
-1. Put cursor inside `"debug_mode"`: `/debug_mode<Enter>`
-2. Press `di"` to delete inside quotes, then `X` to remove the comma before it, then `x` if a comma follows
-3. Or select including comma: press `v`, select `, "debug_mode"`, press `d`
-4. For the second line, find `"debug_fetch"`: `/debug_fetch<Enter>`, select `, "debug_fetch"` with `v` then `f"`, press `d`
-5. Repeat for `"debug_publish"` with `, "debug_publish"`: `v`, `f"`, `d`
+1. Start at the beginning of line 1.
+2. Search for the comma before the debug entry: `/, "debug_mode"<Enter>`.
+3. Press `d2f"` to delete the comma, space, quoted value, and closing quote.
+4. Move to the second line with `j`, then search for the comma before the first debug job: `/, "debug_fetch"<Enter>`.
+5. Press `d2f"` to remove `, "debug_fetch"`.
+6. Search for the comma before the final debug job: `/, "debug_publish"<Enter>`.
+7. Press `d2f"` to remove `, "debug_publish"`.
 
 Expected result:
 
@@ -323,12 +328,13 @@ Practice area:
 ```
 
 Step-by-step:
-1. Put cursor on the space inside `[ ]` on line 1: `f<space>` after `[`
-2. Press `r` then `x` to mark complete: `rx`
-3. Move to line 2: `j`
-4. Delete the entire line: `dd`
-5. Now on line 3, put cursor on `only`: `f o` or `/only<Enter>`
-6. Press `cw`, type `mixed`, press `<Esc>`
+1. Start at the beginning of line 1.
+2. Press `f[`, then `l`, to put the cursor on the space inside `[ ]`.
+3. Press `r` then `x` to mark complete: `rx`
+4. Move to line 2: `j`
+5. Delete the entire line: `dd`
+6. Now on the final item, put cursor on `only`: `/only<Enter>`
+7. Press `cw`, type `mixed`, press `<Esc>`
 
 Expected result:
 
@@ -351,7 +357,7 @@ COPY_TARGET_HERE=
 ```
 
 Step-by-step:
-1. Put cursor on `OBJECT_SCHEMA_SYNC=true`: `gg`
+1. Start on `OBJECT_SCHEMA_SYNC=true` in the practice area.
 2. Yank the line: `yy`
 3. Move to `temporary_debug_flag`: `j`
 4. Delete into black hole (does not replace yank): `"_dd`
@@ -380,7 +386,7 @@ manual check before deploy
 ```
 
 Step-by-step:
-1. Put cursor on column 1 of `await syncVariables()`: `gg0`
+1. Start on `await syncVariables()` in the practice area, then press `0` to ensure column 1.
 2. Enter blockwise visual: `<C-v>`
 3. Select down 3 lines to cover all four: `3j`
 4. Go to Insert mode at the block start: `I`
@@ -484,14 +490,14 @@ let name = "frank"
 ```
 
 Step-by-step:
-1. Put cursor on line 1: `gg`
+1. Start on the first `let name = "alice"` line in the practice area.
 2. Start recording into register `a`: `qa`
 3. Go to beginning of line: `0`
 4. Change `let` to `export const`: `cw` then type `export const`, press `<Esc>`
 5. Move to the variable name: `w`
 6. Uppercase the word: `gUiw`
-7. Move to end of `=` area, go to the space before the value: `f=`
-8. Insert type annotation before `=`: `i: string `, press `<Esc>`
+7. Move to the end of the variable name: `e`
+8. Append the type annotation: `a: string`, press `<Esc>`
 9. Move down one line: `j`
 10. Stop recording: `q`
 11. Replay the macro 5 times for the remaining lines: `5@a`
@@ -528,8 +534,8 @@ Step-by-step:
    - Register `a` still holds `keep this value`
    - Register `1` holds the deleted line
    - Register `0` holds the last yank (also `keep this value`)
-6. Move cursor inside the empty quotes on `target`: `f"`then `l`
-7. Paste from named register `a`: `"ap`
+6. Move cursor to the opening quote on `target`: `f"`
+7. Paste from named register `a` after the opening quote: `"ap`
 
 Expected result:
 
@@ -561,9 +567,9 @@ Step-by-step:
 1. Put cursor on the `c` of `const garbage`: `/const garbage<Enter>`
 2. Delete from cursor up to (but not including) `function innerHelper`: `d/function inner<Enter>`
    - This removes `const garbage...` and `const moreGarbage...` lines and any whitespace between
-3. Now try `c/{pattern}`: undo with `u`, put cursor on `"remove`: `f"`
-4. Change from `"remove` up to the next closing paren: `c/)<Enter>`
-5. Type `"cleaned"`, press `<Esc>`
+3. Now try `c/{pattern}`: undo with `u`, put cursor just after the opening quote in `"remove`: `f"l`
+4. Change from `remove` up to the next quote: `c/"<Enter>`
+5. Type `cleaned`, press `<Esc>`
 
 Expected result (after step 2):
 
@@ -580,7 +586,7 @@ Expected result (after steps 4-5, from original):
 
 ```ts
 function processData() {
-  const garbage = "cleaned")
+  const garbage = "cleaned"
   const moreGarbage = null
   function innerHelper() {
     return true

@@ -2,11 +2,12 @@
 //
 // Tasks:
 //   1. Replace all `/api/v1/` with `/api/v2/` using :%s with a # delimiter
-//   2. Selectively replace `fetchData` → `requestData` using cgn workflow
-//      (skip the one in the test mock on line 55)
+//   2. Selectively replace `fetchData` → `requestData` using cgn workflow.
+//      Skip the `fetchData` inside `mockFetchData` because the comment says not to rename it.
 //   3. Delete all console.log lines using :g/console.log/d
 //   4. Copy all TODO comments to end of file using :g/TODO/t$
-//   5. Replace `userId` with `accountId` only on lines 30-40 using :30,40s/
+//   5. Replace `userId` with `accountId` only inside the three real user functions
+//      (`getUserProfile`, `updateUser`, `deleteUser`) using a visual range or function-local range.
 //
 // TIMING: Expert 60s | Proficient 120s | Learning 240s
 
@@ -73,7 +74,7 @@ function testListUsers() {
 
 // EXPECTED after all tasks:
 // 1. All /api/v1/ → /api/v2/
-// 2. fetchData → requestData everywhere EXCEPT line 55 (mockFetchData body)
+// 2. fetchData → requestData everywhere EXCEPT the mockFetchData body
 // 3. All console.log lines removed
 // 4. TODO comments copied to end of file
-// 5. userId → accountId only in lines 30-40
+// 5. userId → accountId only in getUserProfile, updateUser, and deleteUser

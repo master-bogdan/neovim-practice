@@ -2,16 +2,16 @@
 // Do NOT use backspace or delete key. Use only vim operators.
 //
 // Tasks:
-//   1. Line 28: change `"pening"` to `"pending"` using r (replace char) → rp on the first char
-//   2. Line 29: change `"COMPLETED"` to `"completed"` using gu (lowercase operator) → guiw
-//   3. Line 33: change `userid` to `userId` using ~ (toggle case) on the 'i'
-//   4. Line 37: delete the duplicate `return return` using dw on the second `return`
-//   5. Line 41: change `=> {}` to `=> void` using ci{ (change-inside-braces) won't work here, use ct} then type void
-//   6. Line 45: swap `(b, a)` to `(a, b)` — try using dt, then p
-//   7. Line 49: remove the extra spaces in `name :   string` using f: then df(space) or dww
-//   8. Line 53: change `functoin` to `function` using xp (transpose chars) on 'oi'
-//   9. Line 57: uppercase the constant `max_retries` to `MAX_RETRIES` using gUiw
-//   10. Line 61: delete everything inside the parentheses of `calculate(a, b, c, d)` using di(
+//   1. Change `"pening"` to `"pending"` using r (replace char) → rp on the first char
+//   2. Change `"COMPLETED"` to `"completed"` using gu (lowercase operator) → guiw
+//   3. Change `userid` to `userId` using ~ (toggle case) on the 'i'
+//   4. Delete the duplicate `return return` using dw on the second `return`
+//   5. Change `=> {}` to `=> void` using ct} then type void
+//   6. Swap `(b, a)` to `(a, b)` — try deleting `b`, moving after `a`, then p
+//   7. Remove the extra spaces in `name :   string` using f: then spacing edits
+//   8. Change `functoin` to `function` using xp (transpose chars) on 'oi'
+//   9. Uppercase the constant `max_retries` to `MAX_RETRIES` using gUiw
+//   10. Delete everything inside the parentheses of `calculate(a, b, c, d)` using di(
 //
 // TIMING: Expert 45s | Proficient 90s | Learning 180s
 
@@ -55,13 +55,13 @@ function calculate(a: number, b: number, c: number, d: number): number {
 }
 
 // EXPECTED after all fixes:
-// Line 28: "pending"
-// Line 29: "completed"
-// Line 33: t.userId
-// Line 37: return tasks[0]
-// Line 41: () => void
-// Line 45: compare(a, b)
-// Line 49: name: string
-// Line 53: function processTask
-// Line 57: MAX_RETRIES
-// Line 61: calculate()
+// DEFAULT_STATUS: "pending"
+// FINAL_STATUS: "completed"
+// getTask: t.userId
+// getFirstTask: return tasks[0]
+// Callback: () => void
+// findByStatus: compare(a, b)
+// User.name: name: string
+// processTask: function processTask
+// max_retries: MAX_RETRIES
+// calculate: calculate()

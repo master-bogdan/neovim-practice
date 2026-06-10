@@ -81,10 +81,12 @@ LazyVim search and pickers:
 - `<leader>sB` - grep open buffers
 - `<leader>sj` - jumps
 - `<leader>sm` - marks
-- `<leader>sq` - quickfix list
+- `<leader>sq` - show the existing quickfix list in a picker; it does not create entries
 - `<leader>sl` - location list
 - `[q` - previous quickfix item
 - `]q` - next quickfix item
+- `:cclose<Enter>` - close the native quickfix window
+- `q` or `<Esc>` - close the `<leader>sq` quickfix picker
 
 Help search:
 - `<leader>sh` - help pages
@@ -123,9 +125,23 @@ Search only open buffers:
 
 ## Practice Scenarios
 
+### Setup For Inline Practice Areas
+
+Do not run searches, `:%s`, `:g`, or `:v` commands directly in this chapter file. The headings, instructions, and expected results contain the same words as the examples.
+
+For every scenario with an inline `Practice area`:
+
+1. Copy only the contents inside the fenced code block.
+2. Run `:enew<Enter>` to open an empty buffer.
+3. Press `p` to paste the copied practice text.
+4. Perform the scenario in that isolated buffer.
+5. Run `:bwipeout!<Enter>` when finished, then return to the chapter.
+
+When a scenario says “start at the first line,” it means the first line of this isolated practice buffer.
+
 ### Scenario 1 - Find A Specific Occurrence In A Larger Log
 
-Find the third `pending` transition, then move backward to the second one.
+Find the third transition into `pending`, then move backward to the second one.
 
 Practice area:
 
@@ -139,9 +155,17 @@ Practice area:
 10:07 request req_7 changed pending -> cancelled
 ```
 
-Required moves: `/pending`, `n`, `n`, then `N`.
+Steps:
 
-Expected result: cursor lands on the third `pending`, then returns to the second.
+1. Start at the beginning of the first log line.
+2. Press `/draft -> pending<Enter>` to find the first transition into `pending`.
+3. Press `n` to jump to the second transition into `pending`.
+4. Press `n` again to jump to the third transition into `pending`.
+5. Press `N` to move backward to the second transition.
+
+Required moves: `/draft -> pending`, `n`, `n`, then `N`.
+
+Expected result: cursor lands on the third transition into `pending`, then returns to the second.
 
 ### Scenario 2 - Search Backward To The Cause In Notes
 
@@ -162,6 +186,12 @@ The third request returned a stale result.
 Conclusion: stale result returned because the cache key ignored the participant id.
 ```
 
+Steps:
+
+1. Start on the `Conclusion` line at the bottom of the note.
+2. Press `?cache_key<Enter>` to search backward to the earlier assignment.
+3. Press `?Investigation<Enter>` to search backward again to the heading.
+
 Required moves: `?cache_key`, then `?Investigation`.
 
 Expected result: cursor lands on the cause, then the section heading.
@@ -178,6 +208,13 @@ const displayName = formatVariableName(variableName)
 if (!variableName) throw new Error("missing variableName")
 return resolveVariable(variableName, displayName)
 ```
+
+Steps:
+
+1. Start on the standalone `variableName` in the first line.
+2. Press `*` to search forward for the same symbol.
+3. Press `n` three times to visit later occurrences.
+4. Press `N` to move back to the previous occurrence.
 
 Required moves: `*`, `n`, `n`, `n`, then `N`.
 
@@ -200,6 +237,13 @@ Notes:
 The word retry appears in prose too, not only in code.
 ```
 
+Steps:
+
+1. Start at the `## Release Checklist` heading.
+2. Press `/retry<Enter>` to land on the first checklist match.
+3. Press `n` three times to move through later matches.
+4. Press `<Esc>` or `<leader>ur` to clear the search highlight.
+
 Required moves: `/retry`, `n`, `n`, `n`, then `<Esc>` or `<leader>ur`.
 
 Expected result: you can search across headings, checklist items, and prose.
@@ -214,7 +258,13 @@ pending should stay on this line
 pending should also stay on this line
 ```
 
-Required move: run `:s/pending/queued/g` only on the first line.
+Steps:
+
+1. Start on the first line of the practice area.
+2. Run `:s/pending/queued/g`.
+3. Check that the command did not use `%` and did not include a visual range.
+
+Required move: `:s/pending/queued/g` on the first line only.
 
 Expected result:
 
@@ -234,6 +284,13 @@ Practice area:
 const summary_status = getSummaryStatus()
 const next_summary_status = normalize(summary_status)
 ```
+
+Steps:
+
+1. Start at the beginning of the first line.
+2. Press `/summary_status<Enter>` to set the last search pattern.
+3. Run `:s//report_status/` while still on the first line.
+4. Leave the second line unchanged.
 
 Required moves: `/summary_status`, then `:s//report_status/` on the first line.
 
@@ -257,7 +314,14 @@ api/internal-debug
 api/local-only
 ```
 
-Required moves: select the first two lines with `V`, then run `:s/api/service/g`.
+Steps:
+
+1. Start on the first route line.
+2. Press `V` to begin linewise visual selection.
+3. Press `j` to include the second line.
+4. Type `:s/api/service/g<Enter>`; Vim prefixes the command with the selected range.
+
+Required moves: `V`, `j`, then `:s/api/service/g`.
 
 Expected result:
 
@@ -279,6 +343,12 @@ old/path/to/summary.md
 old/path/to/cache.md
 old/path/to/retry-notes.md
 ```
+
+Steps:
+
+1. Put the cursor anywhere in the practice buffer.
+2. Run `:%s#old/path/to#new/docs#g`.
+3. Use `#` as the delimiter so the slashes in the path do not need escaping.
 
 Required move: use a non-slash delimiter, for example `:%s#old/path/to#new/docs#g`.
 
@@ -303,7 +373,16 @@ task_runner config
 task status
 ```
 
-Required move: use `:%s/task/story/gc`.
+Steps:
+
+1. Put the cursor anywhere in the practice buffer.
+2. Run `:%s/task/story/gc`.
+3. Answer `y` for `task list`.
+4. Answer `y` for `task owner`.
+5. Answer `n` for the `task` inside `task_runner`.
+6. Answer `y` for `task status`.
+
+Required move: `:%s/task/story/gc`, then confirm with `y`, `y`, `n`, `y`.
 
 Expected result:
 
@@ -318,12 +397,19 @@ story status
 
 Use LazyVim project grep to find every chapter that mentions diagnostics.
 
-Practice area:
+Command sequence:
 
 ```text
 <leader>sg
 diagnostic
 ```
+
+Steps:
+
+1. While this chapter file is open, run `:cd %:p:h<Enter>` to set Neovim's working directory to the repository root.
+2. Press `<leader>sg`.
+3. Type `diagnostic` and wait for results.
+4. Verify matches appear in chapter files such as `06-lsp-diagnostics-formatting.md` and `11-full-workflow-drills.md`.
 
 Expected result: picker shows matches across chapter files, not just the current buffer.
 
@@ -337,10 +423,10 @@ Practice area:
 const oldHandler = createOldHandler()
 app.use("/login", oldHandler)
 app.use("/logout", oldHandler)
-app.use("/health", oldHandler)  // keep this one as oldHandler
+app.use("/health", oldHandler)  // keep this one unchanged
 app.use("/signup", oldHandler)
 app.use("/reset", oldHandler)
-app.use("/debug", oldHandler)   // keep this one as oldHandler
+app.use("/debug", oldHandler)   // keep this one unchanged
 app.use("/verify", oldHandler)
 ```
 
@@ -358,13 +444,13 @@ Required moves:
 Expected result:
 
 ```ts
-const newHandler = createNewHandler()
+const newHandler = createOldHandler()
 app.use("/login", newHandler)
 app.use("/logout", newHandler)
-app.use("/health", oldHandler)  // keep this one as oldHandler
+app.use("/health", oldHandler)  // keep this one unchanged
 app.use("/signup", newHandler)
 app.use("/reset", newHandler)
-app.use("/debug", oldHandler)   // keep this one as oldHandler
+app.use("/debug", oldHandler)   // keep this one unchanged
 app.use("/verify", newHandler)
 ```
 
@@ -372,42 +458,44 @@ Why this works: `cgn` combines "change" with "select next match". After the firs
 
 ### Scenario 12 - Batch Operations With :cdo
 
-Use `<leader>sg` to grep a pattern across the project into the quickfix list, then run a substitute command on every quickfix entry at once.
+Use `<leader>sg` to grep the real files in `drills/03-search-replace/cdo-api/`, send the results to quickfix, then run a substitute command on every quickfix entry.
 
-Practice area (imagine these are three separate files):
+Practice files:
 
 ```text
--- file: src/api/users.ts
-const endpoint = "/api/v1/users"
+drills/03-search-replace/cdo-api/users.ts
 
--- file: src/api/rooms.ts
-const endpoint = "/api/v1/rooms"
+drills/03-search-replace/cdo-api/rooms.ts
 
--- file: src/api/billing.ts
-const endpoint = "/api/v1/billing"
+drills/03-search-replace/cdo-api/billing.ts
 ```
 
 Required moves:
-1. `<leader>sg` and type `/api/v1/` to find all occurrences across the project.
-2. Open the quickfix list with `<leader>sq` to verify the matches.
-3. Run `:cdo s/\/api\/v1\//\/api\/v2\//g | update` to replace in every match and save.
+1. While this chapter file is open, run `:cd %:p:h<Enter>` to set the working directory to the repository root.
+2. Press `<leader>sg`. In the search box, type `cdo_`, then `endpoint`, then `_v1` as one continuous search term.
+3. Verify the picker shows the three files under `drills/03-search-replace/cdo-api/`.
+4. Press `<Esc>` to enter picker Normal mode, then press `<C-q>` to send all three results to quickfix.
+5. Run `:copen<Enter>` to verify the quickfix entries.
+6. Run `:cdo s#/api/v1/#/api/v2/#g | update` to replace each matched endpoint and save the files.
+7. Close the native quickfix window with `:cclose<Enter>`.
+8. After checking the result, reset the drill with `:cfdo %s#/api/v2/#/api/v1/#g | update`.
 
-Alternative with a cleaner delimiter: `:cdo s#/api/v1/#/api/v2/#g | update`.
+If `<leader>sg` reports no matches, confirm Neovim’s working directory is the repository root with `:pwd`.
 
 Expected result:
 
 ```text
--- file: src/api/users.ts
-const endpoint = "/api/v2/users"
+-- file: drills/03-search-replace/cdo-api/users.ts
+endpoint path becomes "/api/v2/users"
 
--- file: src/api/rooms.ts
-const endpoint = "/api/v2/rooms"
+-- file: drills/03-search-replace/cdo-api/rooms.ts
+endpoint path becomes "/api/v2/rooms"
 
--- file: src/api/billing.ts
-const endpoint = "/api/v2/billing"
+-- file: drills/03-search-replace/cdo-api/billing.ts
+endpoint path becomes "/api/v2/billing"
 ```
 
-Why this works: `<leader>sg` populates the quickfix list. `:cdo` iterates over every entry and runs the substitute command. The `| update` saves each file after the change.
+Why this works: `<leader>sg` finds the real files, `<C-q>` explicitly populates quickfix, and `:cdo` runs the substitute on each quickfix entry. The `| update` saves each file after the change.
 
 ### Scenario 13 - Global Commands (:g and :v)
 
@@ -443,6 +531,8 @@ export function formatDate(ts: number) {
 ```
 
 Required moves (practice each independently):
+
+Reset to a fresh copy of the practice area before each command. These four commands produce different destructive results and are not meant to run sequentially on one copy.
 
 1. Delete all console.log lines: `:g/console\.log/d`
 2. Delete all commented-out old code: `:g/\/\/ old:/d`
@@ -544,11 +634,13 @@ Expected result: `\c` matches 10+ occurrences of error/Error/ERROR, while `\C` w
 
 1. Open a project.
 2. Use `<leader>sg` to find a function or error message.
-3. Open a result.
-4. Use `/` to find a smaller target inside the file.
-5. Use `:%s/foo/bar/gc` on a safe scratch file.
-6. Open quickfix or location list with `<leader>sq` or `<leader>sl`.
-7. Move with `[q` and `]q`.
+3. Before opening a result, press `<Esc>` to enter picker Normal mode, then press `<C-q>` to send all results to quickfix.
+4. Press `<leader>sq` to view the populated quickfix list.
+5. Press `<Enter>` on one quickfix result to open it.
+6. Use `/` to find a smaller target inside the file.
+7. Use `:%s/foo/bar/gc` only in a safe scratch buffer.
+8. Move through the existing quickfix entries with `[q` and `]q`.
+9. Close the quickfix picker with `q` or `<Esc>`. If you opened the native quickfix window with `:copen`, close it with `:cclose<Enter>`.
 
 ## Troubleshooting / Verify With Which-Key
 
@@ -556,3 +648,5 @@ Expected result: `\c` matches 10+ occurrences of error/Error/ERROR, while `\C` w
 - If replace syntax is hard with paths, use another delimiter: `:%s#old/path#new/path#g`.
 - If you accidentally replace too much, press `u`.
 - If search highlight stays visible, press `<Esc>` or `<leader>ur`.
+- If `<leader>sq` reports `No results found for qflist`, the quickfix list is empty. Return to `<leader>sg`, search, press `<Esc>` to enter picker Normal mode, then press `<C-q>` before opening `<leader>sq`.
+- To close quickfix: press `q` or `<Esc>` in the `<leader>sq` picker, or run `:cclose<Enter>` for the native `:copen` window.

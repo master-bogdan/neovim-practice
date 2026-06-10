@@ -211,7 +211,7 @@ Step-by-step:
 2. Press `<Enter>` to jump to `handleWebhook`, press `<C-l>` to return to editor.
 3. Put cursor on line `const signature = ...`.
 4. Press `V` to enter linewise visual.
-5. Press `3j` to select down to `if (signature !== ...` line — 4 lines total.
+5. Press `6j` to select down through the closing brace of the signature check — 7 lines total.
 6. Press `<leader>re` to extract to a function.
 7. Type `verifyWebhookSignature` and press `<Enter>`.
 8. Rename `verifyWebhookSignature` to `validateSignature` with `<leader>cr`.
@@ -314,7 +314,7 @@ export function useFetchData(url: string) {
 }
 ```
 
-Goal: rename all occurrences of `fetchData` to `requestData` using the `cgn` pattern.
+Goal: rename standalone `fetchData` matches to `requestData` using the `cgn` pattern. Leave larger identifiers like `fetchDataResult` and `useFetchData` unchanged unless you intentionally decide to rename the broader API too.
 
 Step-by-step:
 1. Open the file with `<leader><space>`.
@@ -356,7 +356,7 @@ Do this entire sequence without looking anything up. If you forget a mapping, us
 11. Search for a word with `/`.
 12. Replace one occurrence with `:s/old/new/<Enter>`.
 
-> **Recovery Checkpoint:** At this point you should have: 2 splits visible, terminal output captured, outline showing 5+ symbols. If your layout is different, use `<C-w>o` to reset to one window and restart from step 8.
+> **Recovery Checkpoint:** At this point you should have: 2 splits visible, a scratch buffer with notes, and one pasted line from register `a`. If your layout is different, use `<C-w>o` to reset to one window and restart from step 6.
 
 13. Open terminal with `<leader>ft`.
 14. Run `pwd` and `<Enter>`.

@@ -124,7 +124,18 @@ request_id=req_43 status=published retry_count=0 cache_state=fresh owner=api-wor
 request_id=req_44 status=failed retry_count=5 cache_state=expired owner=cron-worker
 ```
 
-Required moves: use `w`, `W`, `b`, `e`, `j`, and `k`. Use `0` to reset at the start of a line when you overshoot.
+Steps:
+
+1. From column 1, press `w` three times to land on `status`.
+2. Press `e` to inspect the end of `status`, then press `w` twice to land on `pending`.
+3. Press `W` to jump to `retry_count=3`, then press `b` to return to `pending`.
+4. Press `W` twice to land on `cache_state=stale`, then press `w` twice to land on `stale`.
+5. Press `j` to move to the second line, then `0` to reset to column 1.
+6. Press `w` five times to land on `published`.
+7. Press `j`, then `0`, then `w` five times to land on `failed`.
+8. Press `k` to return to `published`, then `j` to return to `failed`.
+
+Required moves: `w`, `W`, `b`, `e`, `j`, `k`, and `0`.
 
 Expected result: you can stop exactly on each field name and each value.
 
@@ -140,7 +151,18 @@ publishSummary(room.id, summary.status, { notify: true, audit: false })
 cacheSummary(room.id, summary.value, cacheOptions.defaultTtl)
 ```
 
-Required moves: combine `t(`, `f,`, `;`, `,`, `j`, `0`, `w`, and `b`.
+Steps:
+
+1. Start on the `r` in `renderSummary`.
+2. Press `t(` to stop on the character before the opening parenthesis, then press `w` to enter the first argument.
+3. Press `f,` to land on the first comma, then `;` to land on the second comma.
+4. Press `,` to return to the first comma.
+5. Press `j`, then `0`, to move to the start of `publishSummary`.
+6. Press `t(`, then `w`, to enter the first argument.
+7. Press `f,`, then `;`, to inspect both argument boundaries in the second call.
+8. Press `b` to move back into the previous argument.
+
+Required moves: `t(`, `f,`, `;`, `,`, `j`, `0`, `w`, and `b`.
 
 Expected result: you can inspect call shape and argument boundaries without entering Insert mode.
 
@@ -159,6 +181,16 @@ function normalizeVariable(rawValue: unknown) {
 }
 ```
 
+Steps:
+
+1. Start on the `f` in `function`.
+2. Press `$` to visit the end of the function signature.
+3. Press `j`, then `0`, to visit physical column 1 of the `if` line.
+4. Press `^` to jump to the first non-space character on that line.
+5. Press `$` to inspect the line end.
+6. Press `j`, then `0`, then `^`, then `$` on the `return ""` line.
+7. Press `k`, then `0`, then `^` to return to the `if` line indentation.
+
 Required moves: `0`, `^`, `$`, `j`, and `k`.
 
 Expected result: you can distinguish column 1, indentation, and line end on multiple indentation depths.
@@ -175,7 +207,18 @@ room_id:42;owner:sync-worker;status:queued;priority:high
 alpha | beta | gamma | delta | epsilon
 ```
 
-Required moves: `f,`, `;`, `,`, `f:`, `f;`, `f|`, `F|`, and `0`.
+Steps:
+
+1. Start at the first `u` in `user_id`.
+2. Press `f,` to land on the first comma, then `;` twice to visit the next two commas.
+3. Press `,` to reverse to the previous comma.
+4. Press `j`, then `0`, to move to the start of the second line.
+5. Press `f:` to land on the first colon, then `f;` to land on the first semicolon.
+6. Press `j`, then `0`, to move to the start of the pipe-separated line.
+7. Press `f|`, then `;` twice to visit later pipes.
+8. Press `F|` to move backward to the previous pipe.
+
+Required moves: `f,`, `;`, `,`, `f:`, `f;`, `f|`, `F|`, `j`, and `0`.
 
 Expected result: cursor lands on exact separators across comma, colon, semicolon, and pipe formats.
 
@@ -193,7 +236,14 @@ Run npm --workspace=sheets-api test -- --runInBand before pushing.
 The reviewer said: "rename request_status, not request.status".
 ```
 
-Required moves: use `w` on one pass and `W` on another pass.
+Guided passes:
+
+1. On the first `object_schema.variable_value` line, use `w` repeatedly and notice how punctuation splits the identifier.
+2. Press `j`, then `0`, to move to the second copy of the same line.
+3. Use `W` repeatedly and notice that the dotted and dashed tokens stay whole.
+4. On the path and CLI lines, repeat the same comparison: `w` exposes punctuation boundaries, while `W` moves by whitespace chunks.
+
+Required moves: `w`, `W`, `j`, and `0`.
 
 Expected result: you feel the difference between punctuation-aware word movement and whitespace-only WORD movement.
 
@@ -213,7 +263,19 @@ Practice area:
 The next pass should focus on fewer keystrokes and cleaner recovery.
 ```
 
-Required moves: use `j`, `w`, `f[`, `f]`, `f(`, `t)`, `$`, and `gg`.
+Steps:
+
+1. Start on the first `#` in `## Review Notes`.
+2. Press `j` twice to reach the first checklist item.
+3. Press `f[` to land on `[`, then `f]` to land on `]`.
+4. Press `j`, then `0`, then `f[`, then `f]` to inspect the second checklist marker.
+5. Press `j`, then `0`, then `f[`, then `f]` to inspect the third checklist marker.
+6. Press `f[`, then `f]`, to inspect the link label.
+7. Press `f(` to land on the URL opening parenthesis.
+8. Press `t)` to stop before the closing parenthesis, then `$` to inspect the end of the line.
+9. Press `j` twice to reach the final sentence, then use `w` to move through its first few words.
+
+Required moves: `j`, `w`, `f[`, `f]`, `f(`, `t)`, `$`, and `0`.
 
 Expected result: you can navigate Markdown structure without treating it like code.
 
@@ -228,7 +290,15 @@ user_id user_name request_status request_type retry_count summary_status cache_s
 room_id room_name participant_status participant_type participant_count export_status
 ```
 
-Required moves: use `s` and choose the Flash label.
+Steps:
+
+1. Start at the first `u` in `user_id`.
+2. Press `s`, type a unique part of `request_type` such as `ty`, then choose the Flash label.
+3. Press `s`, type a unique part of `summary_status` such as `su`, then choose the label.
+4. Press `s`, type a unique part of `retry_count` such as `re`, then choose the label.
+5. Press `s`, type a unique part of `user_name` such as `us`, then choose the label.
+
+Required moves: `s` and the visible Flash labels.
 
 Expected result: you reach distant visible targets in one jump.
 
@@ -240,7 +310,15 @@ Open this file with line numbers enabled. Jump to the `Practice Scenarios` headi
 :set number
 ```
 
-Required moves: `{count}G`, `gg`, search with `/Real-World`.
+Steps:
+
+1. Run `:set number` so line numbers are visible.
+2. Press `gg` to start from the top of the file.
+3. Type the visible line number for `Practice Scenarios`, followed by `G`, to jump to that heading.
+4. Press `/Real-World<Enter>` to jump to the `Real-World Drill` heading.
+5. Press `gg` to return to the top.
+
+Required moves: `gg`, `{count}G`, and `/Real-World`.
 
 Expected result: you can move by known line number and by search target.
 
@@ -254,7 +332,18 @@ Practice area:
 Good editor practice is careful and quiet. The point is to reach the right place without dragging the cursor across every character. When the nearest useful target is visible, jump to it. When the target is not visible, search for it. Accuracy becomes a habit before speed becomes useful.
 ```
 
-Required moves: combine `w`, `b`, `e`, `/nearest`, `n`, and `0`.
+Steps:
+
+1. Start on `Good`.
+2. Press `w` four times to land on `careful`.
+3. Press `e` to inspect the end of `careful`, then `b` to return to its start.
+4. Press `/without<Enter>` to jump directly to `without`.
+5. Press `/nearest<Enter>` to jump to `nearest`.
+6. Press `/target<Enter>` to jump to the first later `target`, then press `n` to jump to the next `target`.
+7. Press `/habit<Enter>` to jump to `habit`.
+8. Press `0` to return to the start of the current line.
+
+Required moves: `w`, `b`, `e`, `/without`, `/nearest`, `/target`, `n`, `/habit`, and `0`.
 
 Expected result: you can navigate prose as confidently as code.
 
@@ -268,13 +357,22 @@ Practice area:
 alpha beta gamma delta epsilon zeta eta theta
 ```
 
-Required moves: use `w` too many times, recover with `b`; use `f` too far with `;`, recover with `,`.
+Steps:
+
+1. Start on `alpha`.
+2. Press `w` four times so you overshoot `gamma` and land on `epsilon`.
+3. Press `b` twice to recover back to `gamma`.
+4. Press `0` to reset to the start of the line.
+5. Press `ft` to land on the `t` in `beta`, then press `;` too many times to continue to later `t` matches.
+6. Press `,` to move back to the previous `t`.
+
+Required moves: `w`, `b`, `0`, `f`, `;`, and `,`.
 
 Expected result: recovery becomes automatic instead of frustrating.
 
 ### Scenario 11 - Jump List Navigation
 
-Start at the top of the practice area. Make several jumps using `gd`, `/`, and `G`. Then retrace your steps with `<C-o>` and move forward again with `<C-i>`.
+Start at the top of the practice area. Make several jumps using search and `G`. Then retrace your steps with `<C-o>` and move forward again with `<C-i>`.
 
 Practice area:
 
@@ -309,17 +407,18 @@ const globalCache: Record<string, CacheEntry> = {}
 
 Steps:
 
-1. Place cursor on `MAX_RETRIES` in `fetchWithRetry` and press `gd` to jump to its definition at the top.
-2. Press `/CacheEntry<CR>` to search for `CacheEntry` — you land on the interface.
-3. Press `G` to jump to the bottom of the file.
-4. Press `/invalidateCache<CR>` to jump to that function.
-5. Now press `<C-o>` — you return to the bottom (`G` position).
-6. Press `<C-o>` again — you return to `CacheEntry`.
-7. Press `<C-o>` again — you return to `MAX_RETRIES` definition.
-8. Press `<C-i>` — you move forward to `CacheEntry`.
-9. Press `<C-i>` again — you move forward to the bottom.
+1. Start on the first line of the practice area.
+2. Press `/fetchWithRetry<Enter>` to jump to the retry function.
+3. Press `/CacheEntry<Enter>` to jump to the `CacheEntry` reference in the `invalidateCache` signature.
+4. Press `/^const globalCache<Enter>` to jump to the final line of the practice area.
+5. Press `?buildCacheKey<Enter>` to jump backward to the helper function.
+6. Now press `<C-o>` — you return to `globalCache`.
+7. Press `<C-o>` again — you return to `CacheEntry`.
+8. Press `<C-o>` again — you return to `fetchWithRetry`.
+9. Press `<C-i>` — you move forward to `CacheEntry`.
+10. Press `<C-i>` again — you move forward to `globalCache`.
 
-Required moves: `gd`, `/`, `G`, `<C-o>`, `<C-i>`.
+Required moves: `/`, `?`, `<C-o>`, and `<C-i>`.
 
 Expected result: you can freely retrace and replay your jump history without remembering line numbers.
 
@@ -362,9 +461,9 @@ function scheduleRetry(task: Task): void {
 
 Steps:
 
-1. From the top of the file, press `/processQueue<CR>` to jump to that function.
+1. From the top of the file, press `/processQueue<Enter>` to jump to that function.
 2. Press `zz` to center the function signature on screen — now you see context above and below.
-3. Press `/scheduleRetry<CR>` to jump to the retry function.
+3. Press `/scheduleRetry<Enter>` to jump to the retry function.
 4. Press `zt` to push it to the top of the screen — you can now read the full function body below.
 5. Press `<C-o>` to return to `processQueue`.
 6. Press `zb` to push it to the bottom — you can now see everything that came before it.
@@ -459,11 +558,12 @@ Expected result: you can select precisely scoped syntactic regions (expression, 
 Open a source file and perform this without using the mouse:
 
 1. Jump to the top with `gg`.
-2. Search visually for a function name.
-3. Use `s` to jump to it.
-4. Move to an argument with `f(` or `t,`.
-5. Move to the next function with `/function_name_fragment`.
-6. Return to the top with `gg`.
+2. Use `/function<Enter>` to land on the first function declaration.
+3. Use `s` to jump to another visible function name.
+4. Move to its argument list with `f(`.
+5. Move to an argument boundary with `t,` or `f,`.
+6. Move to the next known function with `/function_name_fragment<Enter>`.
+7. Use `<C-o>` to return to the previous function, then `gg` to return to the top.
 
 ## Troubleshooting / Verify With Which-Key
 

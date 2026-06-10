@@ -2,13 +2,15 @@
 // Use: w, b, e, f, F, /, ?, gg, G, {, }, [[, ]], and Flash (s)
 //
 // Tasks:
-//   1. Jump to `processPayment` using /proc
-//   2. From there jump to `validateCard` using ?vali (backward)
-//   3. Jump to the closing brace of `processPayment` using ]m or %
-//   4. Jump to `sendReceipt` using Flash: s + "se"
-//   5. Jump to line 50 using 50G
-//   6. Jump to the word "expired" on line 38 using /expired
-//   7. Return to where you started using '' or <C-o>
+//   1. Start at the first interface below this comment block, then jump to
+//      `processPayment` with /^function processPayment
+//   2. From there jump backward to `validateCard` with ?^function validateCard
+//   3. Press <C-o> to return to `processPayment`, then use f{ and % to jump
+//      to the closing brace of that function
+//   4. Jump to `sendReceipt` using Flash: s + "se" + label
+//   5. Search forward to `generateReport` with /^function generateReport
+//   6. Search backward to the word "expired" with ?expired
+//   7. Return to the previous jump locations using <C-o>
 //
 // TIMING: Expert 20s | Proficient 40s | Learning 90s
 

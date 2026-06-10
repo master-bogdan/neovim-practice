@@ -2,7 +2,7 @@
 #
 # Tasks:
 #   1. Add `tags = { managed = "true" }` above every closing `}` of a resource block
-#      using a macro: qa → O  tags... → <Esc> → /^}<CR> → q → repeat with @a
+#      using a macro: qa → O  tags... → <Esc> → /^}<Enter> → q → repeat with @a
 #   2. Replace all `t3.micro` with `t3.small` using :%s/t3.micro/t3.small/g
 #   3. Add a `description` field to each variable block (use block visual + macro)
 #   4. Change all `us-east-1` to `eu-west-1` using :%s

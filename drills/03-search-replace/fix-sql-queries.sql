@@ -2,8 +2,8 @@
 --
 -- Tasks:
 --   1. Replace all `user_tbl` with `users` using :%s/user_tbl/users/g
---   2. Change all `SELECT *` to `SELECT id, email, name` using cgn (selective)
---      Skip the one in the COUNT query (line 42)
+--   2. Change actual `SELECT *` queries to `SELECT id, email, name` using cgn
+--      The COUNT query is already explicit and should stay `SELECT COUNT(*)`
 --   3. Add `WHERE deleted_at IS NULL` to every SELECT that lacks it
 --      Use :g/SELECT.*FROM.*users/  to find them, then manually add
 --   4. Replace `VARCHAR(255)` with `TEXT` everywhere using :%s

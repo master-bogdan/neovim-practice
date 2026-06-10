@@ -2,14 +2,14 @@
 // Use: <leader>cr (rename), extract function, extract variable, inline variable
 //
 // Tasks:
-//   1. Extract the validation logic (lines 35-42) into a function `validateOrder`
+//   1. Extract the validation logic marked by the comment into a function `validateOrder`
 //      Select the lines → <leader>re (extract function)
-//   2. Extract the discount calculation (line 52) into a variable `discountMultiplier`
+//   2. Extract the discount multiplier expression from `discountedTotal` into a variable `discountMultiplier`
 //      Select the expression → <leader>rv (extract variable)
 //   3. Inline the `TAX_RATE` constant back into where it's used
 //      Cursor on TAX_RATE → <leader>ri (inline variable)
 //   4. Rename `processOrder` to `fulfillOrder` using <leader>cr
-//   5. Extract the shipping cost logic (lines 60-66) into `calculateShipping`
+//   5. Extract the shipping cost logic marked by the comment into `calculateShipping`
 //   6. Rename the parameter `o` to `order` using <leader>cr
 //
 // TIMING: Expert 60s | Proficient 120s | Learning 240s

@@ -1,7 +1,7 @@
 // OBJECTIVE: Use LSP navigation to explore this Go codebase
 //
 // Tasks:
-//   1. Put cursor on `Repository` (line 26) and press `gd` — jump to interface def
+//   1. Put cursor on `Repository` in `UserService.repo` and press `gd` — jump to interface def
 //   2. Put cursor on `FindByEmail` and press `gr` — find all references
 //   3. Put cursor on `UserService` and press `gy` — go to type definition
 //   4. Press `K` on `context.Context` to see hover documentation

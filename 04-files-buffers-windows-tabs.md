@@ -290,7 +290,7 @@ Step-by-step:
 1. Create a layout: open file A, press `<leader>|`, open file B in the right pane
 2. Press `<leader>-` in the right pane to add file C below it
 3. Now you have: A (left), B (top-right), C (bottom-right)
-4. Move cursor to window B: `<C-k>` or `<C-l>` then `<C-k>`
+4. You are in window C after creating the lower split. Press `<C-k>` to move up to window B.
 5. Press `<C-w>H` — window B moves to the far left (full height)
 6. The layout is now rearranged
 7. Press `u` — this does NOT undo window movements; undo is for text only
@@ -456,7 +456,7 @@ Step-by-step:
 4. Need the Makefile? Press `<leader>,` (buffer picker) — but it is not open yet
 5. Press `<leader><space>`, type `Makefile`, press `Enter` — opens in current window
 6. Now `.env.development` is the alternate file. Press `<C-^>` to flip between Makefile and env
-7. To see all three: press `<C-h>` to go to left split (docker-compose), then `<leader>-` to add a horizontal split below, open Makefile there
+7. To see all three: press `<C-h>` to go to the left split (`docker-compose.yml`), then `<leader>-` to add a horizontal split below, and open `.env.development` there
 8. Use `<C-h/j/k/l>` to navigate between the three panes
 
 Expected result: config editing often requires cross-referencing multiple files. Splits let you see them simultaneously, and the alternate file toggle handles your most active pair.

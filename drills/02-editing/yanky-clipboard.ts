@@ -1,10 +1,10 @@
 // OBJECTIVE: Master yanky.nvim paste-cycling and yank history
 //
 // Tasks:
-//   1. Yank line 30 (the "first" string): yy
-//   2. Yank line 31 (the "second" string): yy
-//   3. Yank line 32 (the "third" string): yy
-//   4. Paste below line 40: p
+//   1. Search for `const first`, land on that line, then yank it: yy
+//   2. Move to `const second` and yank it: j then yy
+//   3. Move to `const third` and yank it: j then yy
+//   4. Search for `Paste here and cycle to get "first"`, then paste below it: p
 //      → you get "third" (most recent yank)
 //   5. Cycle backward through yank history: <C-p>
 //      → changes to "second"
@@ -14,7 +14,7 @@
 //      → back to "second"
 //   8. Open yank history picker: <leader>p
 //      → select any previous yank from the list
-//   9. Yank a word from line 50 into register "a": "ayiw
+//   9. Yank one word from `const word1 = "Neovim"` into register "a": "ayiw
 //   10. Paste from register "a" somewhere else: "ap
 //       (named registers are separate from yank ring)
 //

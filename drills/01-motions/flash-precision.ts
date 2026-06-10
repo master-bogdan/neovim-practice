@@ -1,7 +1,7 @@
-// OBJECTIVE: Reach every target in 3 keystrokes or fewer using Flash (s)
+// OBJECTIVE: Reach visible targets quickly using Flash (s)
 //
 // Flash workflow: press `s`, type 2 chars of your target, press the label key
-// Most jumps: s + 2 chars + 1 label = 4 keystrokes total (3 after s)
+// Most jumps: s + 2 chars + 1 label = 4 keystrokes total.
 //
 // Tasks — jump to each target function/variable using Flash:
 //   1. Jump to `validateEmail` → s + "va" + label
@@ -10,15 +10,15 @@
 //   4. Jump to `parseResponse` → s + "pa" + label
 //   5. Jump to `RETRY_LIMIT` → s + "RE" + label (case-sensitive)
 //   6. Jump to `handleTimeout` → s + "Ti" + label (or "ha")
-//   7. Jump to the word `expired` on line 75 → s + "ex" + label
+//   7. Jump to the word `expired` inside `handleTimeout` → s + "ex" + label
 //   8. Jump to `formatCurrency` → s + "Cu" + label
-//   9. Jump to the closing brace of `processQueue` → use F} or s + "};" (context dependent)
-//   10. Jump BACKWARD to `DatabaseError` → S + "Da" + label (S = reverse Flash)
+//   9. Jump to `processQueue` → s + "pr" + label, then use f{ and % to reach its closing brace
+//   10. Jump back to `DatabaseError` → s + "Da" + label if visible, or ?DatabaseError if it is off screen
 //
 // Flash tips:
 //   - Prefer 2 chars that are UNIQUE in the visible area (fewer labels to pick)
 //   - Use uppercase chars in identifiers for faster targeting (e.g., "Di" for Discount)
-//   - S (shift+s) searches backward
+//   - Use normal search (`?target`) when the target is above the visible area
 //   - After Flash labels appear, press the colored char to jump instantly
 //   - <Esc> cancels Flash if you mistype
 //

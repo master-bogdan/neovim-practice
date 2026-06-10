@@ -381,9 +381,9 @@ Steps:
 2. Run `:ConformInfo` — verify that `prettier` (or your configured formatter) is listed and available.
 3. Press `<leader>cf` — the file reformats to proper style.
 4. Undo with `u` to return to the messy state.
-5. Press `<leader>uf` — this toggles auto-format on save. The status line or a notification confirms the state.
-6. Save with `:w` — if auto-format is enabled, the file formats on save automatically.
-7. Press `<leader>uf` again to re-enable auto-format if you disabled it.
+5. Press `<leader>uf` and read the notification or status line.
+6. If auto-format is now disabled, press `<leader>uf` once more so it is enabled before saving.
+7. Save with `:w` — the file formats on save automatically.
 
 Expected result: `<leader>cf` formats immediately. Auto-format on save runs the same formatter transparently.
 
