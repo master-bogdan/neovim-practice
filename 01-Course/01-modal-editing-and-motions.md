@@ -231,7 +231,7 @@ Practice area:
 ```text
 object_schema.variable_value resolver-cache-key
 object_schema.variable_value resolver-cache-key
-Open /Users/bogdan/Projects/neovimclass/README.md before editing.
+Open `README.md` from this repository before editing.
 Run npm --workspace=sheets-api test -- --runInBand before pushing.
 The reviewer said: "rename request_status, not request.status".
 ```

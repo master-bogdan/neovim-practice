@@ -1,10 +1,10 @@
-# Practice Drills
+# Daily Drills
 
 Real source files to open in Neovim and edit as exercises.
 
 ## How to use
 
-1. Open a drill file in nvim
+1. Open a drill file in Neovim from the repository root
 2. Read the OBJECTIVE comment at the top
 3. Perform the edits using only the keyboard
 4. Check your result against the EXPECTED comment at the bottom

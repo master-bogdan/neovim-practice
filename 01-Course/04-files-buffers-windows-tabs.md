@@ -23,6 +23,10 @@ A picker (telescope) is almost always faster than cycling through buffers one at
 
 In LazyVim with edgy.nvim, sidebar windows (neo-tree, trouble, terminals) are managed automatically. They snap to edges and do not interfere with your main editing splits.
 
+## Practice Setup
+
+Open Neovim from the repository root. All file-based scenarios in this chapter use real fixtures under `01-Course/practice-files/04-navigation/`.
+
 ## Keymaps
 
 File and buffer pickers (telescope):
@@ -167,15 +171,15 @@ Open three related files, then practice cycling forward and backward.
 Practice area (files to open):
 
 ```text
-src/services/userService.ts
-src/services/roomService.ts
-src/services/cacheService.ts
+01-Course/practice-files/04-navigation/src/services/userService.ts
+01-Course/practice-files/04-navigation/src/services/roomService.ts
+01-Course/practice-files/04-navigation/src/services/cacheService.ts
 ```
 
 Step-by-step:
-1. Press `<leader><space>`, type `userService`, press `Enter`
-2. Press `<leader><space>`, type `roomService`, press `Enter`
-3. Press `<leader><space>`, type `cacheService`, press `Enter`
+1. Press `<leader><space>`, type `userService`, press `<Enter>`
+2. Press `<leader><space>`, type `roomService`, press `<Enter>`
+3. Press `<leader><space>`, type `cacheService`, press `<Enter>`
 4. You are now viewing `cacheService.ts`
 5. Press `<S-h>` — you see `roomService.ts`
 6. Press `<S-h>` — you see `userService.ts`
@@ -189,11 +193,11 @@ Expected result: you can move linearly through open buffers without a picker. Us
 When you have many buffers open, cycling is slow. Use the picker to jump directly.
 
 Step-by-step:
-1. Open 5+ files using `<leader><space>` (any project files)
+1. Open the three service files from Scenario 1 plus `src/routes/users.ts` and `src/types/user.ts` from the same fixture directory
 2. Press `<leader>,` — the buffer picker appears showing all open buffers
 3. Type a few characters of the filename you want (fuzzy matching)
-4. Press `Enter` to jump directly to that buffer
-5. Alternatively: use `j`/`k` to select from the list, then `Enter`
+4. Press `<Enter>` to jump directly to that buffer
+5. Alternatively: use `j`/`k` to select from the list, then `<Enter>`
 
 Expected result: you reach any open buffer in 2-3 keystrokes regardless of how many are open.
 
@@ -204,12 +208,13 @@ The alternate file is the last buffer you were editing. This is the fastest two-
 Practice area (simulated workflow):
 
 ```text
-Scenario: you are writing a function in handler.go and need to check the type in types.go.
+01-Course/practice-files/04-navigation/handler.go
+01-Course/practice-files/04-navigation/types.go
 ```
 
 Step-by-step:
-1. Open `handler.go` with `<leader><space>`
-2. Open `types.go` with `<leader><space>` — now `handler.go` becomes the alternate
+1. Open `01-Course/practice-files/04-navigation/handler.go` with `<leader><space>`
+2. Open `01-Course/practice-files/04-navigation/types.go` with `<leader><space>` — now `handler.go` becomes the alternate
 3. Press `<C-^>` — you jump back to `handler.go`
 4. Press `<C-^>` — you jump back to `types.go`
 5. Continue toggling as needed while working between the two files
@@ -222,14 +227,14 @@ Expected result: you flip between two related files instantly. This is the most 
 Understand the difference between closing a window and deleting a buffer.
 
 Step-by-step:
-1. Open any file with `<leader><space>` — call it File A
-2. Open another file with `<leader><space>` — call it File B (you are viewing B)
+1. Open `01-Course/practice-files/04-navigation/src/services/userService.ts` with `<leader><space>` — this is File A
+2. Open `01-Course/practice-files/04-navigation/src/services/roomService.ts` with `<leader><space>` — this is File B, which you are now viewing
 3. Run `:ls` — both A and B appear in the buffer list
 4. Press `<leader>bd` — File B is deleted from the buffer list, window shows another buffer
-5. Run `:ls` — only File A remains
-6. Open File B again with `<leader><space>`
-7. Now try `:bwipeout` — this fully removes the buffer AND its undo history, marks, etc.
-8. Run `:ls` — File B is completely gone
+5. Run `:ls<Enter>` — File A remains and File B is absent
+6. Open `roomService.ts` again with `<leader><space>`
+7. Run `:bwipeout<Enter>` — this fully removes File B and its undo history and marks
+8. Run `:ls<Enter>` — verify File B is absent
 
 Expected result: you understand `<leader>bd` (soft close) vs `:bwipeout` (hard removal). Use `bd` in daily work. Use `bwipeout` when a buffer has stale state you want fully purged.
 
@@ -252,14 +257,14 @@ Practice area (target layout):
 ```
 
 Step-by-step:
-1. Open `handler.go` with `<leader><space>`
+1. Open `01-Course/practice-files/04-navigation/handler.go` with `<leader><space>`
 2. Press `<leader>|` — creates a vertical split (two side-by-side windows showing the same buffer)
 3. Press `<C-l>` — move cursor to the right window
-4. Press `<leader><space>`, type `handler_test`, press `Enter` — right window now shows the test
+4. Press `<leader><space>`, type `handler_test`, press `<Enter>` — right window now shows the test
 5. Press `<C-h>` — move back to left window (handler.go)
 6. Press `<leader>-` — creates a horizontal split below (left window splits into top and bottom)
 7. Press `<C-j>` — move to the lower window
-8. Open a notes file or terminal here
+8. Open `01-Course/practice-files/04-navigation/notes.md` here
 9. Navigate between all three windows with `<C-h/j/k/l>`
 
 Expected result: you have a three-pane layout. Two files on top side by side, one file on the bottom left.
@@ -287,8 +292,8 @@ Expected result: you can fine-tune pane sizes without memorizing pixel counts. T
 Rearrange windows without closing and reopening them.
 
 Step-by-step:
-1. Create a layout: open file A, press `<leader>|`, open file B in the right pane
-2. Press `<leader>-` in the right pane to add file C below it
+1. Open `src/services/userService.ts`, press `<leader>|`, move right with `<C-l>`, and open `src/services/roomService.ts`
+2. Press `<leader>-` in the right pane, move down with `<C-j>`, and open `src/services/cacheService.ts`
 3. Now you have: A (left), B (top-right), C (bottom-right)
 4. You are in window C after creating the lower split. Press `<C-k>` to move up to window B.
 5. Press `<C-w>H` — window B moves to the far left (full height)
@@ -312,11 +317,11 @@ Context 3: Config editing (docker-compose, env, Makefile)
 ```
 
 Step-by-step:
-1. Set up your feature development layout (splits with impl + test)
+1. Set up the feature layout with `handler.go` and `handler_test.go` side by side
 2. Press `<leader><tab><tab>` — creates a new tab page
-3. You now have a fresh window. Open PR-related files here with their own splits
+3. Open `src/services/userService.ts` and `src/routes/users.ts` in this tab with their own splits
 4. Press `<leader><tab><tab>` — creates a third tab page
-5. Open config files here
+5. Open `docker-compose.yml`, `.env.development`, and `Makefile` here
 6. Navigate between tabs:
    - `<leader><tab>]` or `gt` — next tab
    - `<leader><tab>[` or `gT` — previous tab
@@ -334,10 +339,10 @@ Use the file explorer to browse and open files while edgy keeps it pinned to the
 Step-by-step:
 1. Press `<leader>e` — neo-tree opens on the left side (managed by edgy.nvim)
 2. Navigate the tree with `j`/`k`
-3. Press `Enter` on a file — it opens in the main editing area (not in the sidebar)
+3. Press `<Enter>` on a file — it opens in the main editing area (not in the sidebar)
 4. Press `<leader>e` — neo-tree closes, your main splits are undisturbed
 5. Press `<leader>ge` — neo-tree opens showing git status (modified/untracked files)
-6. Press `Enter` on a modified file to open it
+6. Press `<Enter>` on a modified file to open it
 7. Press `<leader>ge` — close git view
 8. Notice: edgy.nvim keeps sidebar windows from stealing space from your editing splits
 9. When you press `<C-h>` from your editor, you move INTO the neo-tree window
@@ -350,11 +355,11 @@ Expected result: sidebars are stable, predictable, and never disrupt your main e
 Save your complete workspace state so you can resume after restarting Neovim.
 
 Step-by-step:
-1. Open a project directory: `cd ~/Projects/my-app && nvim`
+1. From a shell at this repository root, run `nvim .`
 2. Set up your layout: open files, create splits, arrange tabs
 3. LazyVim auto-saves sessions on exit by default (via persistence.nvim)
 4. Quit Neovim: `:qa`
-5. Reopen Neovim in the same directory: `cd ~/Projects/my-app && nvim`
+5. From the same repository root, run `nvim .` again
 6. Press `<leader>qs` — your entire session is restored (buffers, windows, tabs)
 7. If you want the last session regardless of directory: `<leader>ql`
 8. To choose from all saved sessions: `<leader>qS`
@@ -369,10 +374,10 @@ A realistic scenario: you are adding a new API endpoint and need to touch multip
 Practice area (files involved):
 
 ```text
-src/routes/users.ts          (new route handler)
-src/services/userService.ts  (new service method)
-src/types/user.ts            (new type definition)
-src/tests/users.test.ts      (new test)
+01-Course/practice-files/04-navigation/src/routes/users.ts
+01-Course/practice-files/04-navigation/src/services/userService.ts
+01-Course/practice-files/04-navigation/src/types/user.ts
+01-Course/practice-files/04-navigation/src/tests/users.test.ts
 ```
 
 Step-by-step:
@@ -396,10 +401,10 @@ A realistic Go scenario: implementing a new handler with its dependencies.
 Practice area (files involved):
 
 ```text
-internal/handler/room.go          (HTTP handler)
-internal/handler/room_test.go     (handler tests)
-internal/service/room.go          (business logic)
-internal/repository/room.go       (database layer)
+01-Course/practice-files/04-navigation/internal/handler/room.go
+01-Course/practice-files/04-navigation/internal/handler/room_test.go
+01-Course/practice-files/04-navigation/internal/service/room.go
+01-Course/practice-files/04-navigation/internal/repository/room.go
 ```
 
 Step-by-step:
@@ -442,11 +447,11 @@ You need to edit multiple config files that live in different directories.
 Practice area (files involved):
 
 ```text
-docker-compose.yml
-.env.development
-Makefile
-nginx/nginx.conf
-k8s/deployment.yaml
+01-Course/practice-files/04-navigation/docker-compose.yml
+01-Course/practice-files/04-navigation/.env.development
+01-Course/practice-files/04-navigation/Makefile
+01-Course/practice-files/04-navigation/nginx/nginx.conf
+01-Course/practice-files/04-navigation/k8s/deployment.yaml
 ```
 
 Step-by-step:
@@ -454,7 +459,7 @@ Step-by-step:
 2. Press `<leader>|` — split right
 3. Open `.env.development` — reference env vars while editing compose
 4. Need the Makefile? Press `<leader>,` (buffer picker) — but it is not open yet
-5. Press `<leader><space>`, type `Makefile`, press `Enter` — opens in current window
+5. Press `<leader><space>`, type `Makefile`, press `<Enter>` — opens in current window
 6. Now `.env.development` is the alternate file. Press `<C-^>` to flip between Makefile and env
 7. To see all three: press `<C-h>` to go to the left split (`docker-compose.yml`), then `<leader>-` to add a horizontal split below, and open `.env.development` there
 8. Use `<C-h/j/k/l>` to navigate between the three panes
@@ -482,7 +487,7 @@ Projects are auto-detected based on `.git`, `package.json`, `go.mod`, `Cargo.tom
 ```text
 <leader>fp            open project picker
 type part of the project name (fuzzy)
-Enter                 switches to that project
+<Enter>               switches to that project
 <leader>qs            restore that project's session (buffers, splits, tabs)
 ```
 
@@ -521,7 +526,7 @@ When scrolling inside a long function, the function signature disappears off-scr
 ### Practice Scenario — Navigate A Long File With Context
 
 Step-by-step:
-1. Open a large file (200+ lines, multiple functions)
+1. Open the nested fixture `01-Course/practice-files/04-navigation/src/context-demo.ts`
 2. Scroll into the middle of a function with `<C-d>`
 3. Notice the function signature appears at the top of the window (pinned)
 4. Continue scrolling into a nested block (if/for/while)

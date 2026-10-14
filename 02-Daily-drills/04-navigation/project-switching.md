@@ -8,9 +8,9 @@
 
 1. Open this file in nvim
 2. Open 3 more files from this repo using `<leader><space>`:
-   - `drills/02-editing/fix-the-bugs.ts`
-   - `drills/01-motions/navigate-functions.ts`
-   - `drills/03-search-replace/rename-api-versions.ts`
+   - `02-Daily-drills/02-editing/fix-the-bugs.ts`
+   - `02-Daily-drills/01-motions/navigate-functions.ts`
+   - `02-Daily-drills/03-search-replace/rename-api-versions.ts`
 3. Cycle backward through all buffers: `<S-h>` × 3
 4. Cycle forward: `<S-l>` × 3
 5. Jump directly to fix-the-bugs.ts using `<leader>,` (buffer picker)

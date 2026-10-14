@@ -1,0 +1,7 @@
+services:
+  api:
+    image: navigation-practice-api
+    env_file:
+      - .env.development
+    ports:
+      - "8080:8080"
