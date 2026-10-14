@@ -359,7 +359,7 @@ When to hide it:
 Rename a constant `MAX_RETRIES` to `MAX_ATTEMPTS` across the entire project.
 
 Step-by-step:
-1. Grep for the constant: `<leader>sg` → type `MAX_RETRIES` → Enter
+1. Grep for the constant: `<leader>sg` → type `MAX_RETRIES` → `<Enter>`
 2. Review matches in Telescope results
 3. Send all results to quickfix: `<C-q>` (sends all telescope results to quickfix)
 4. Quickfix opens with nvim-bqf enhancements:
@@ -573,7 +573,7 @@ type Config struct {
 Use nvim-bqf features to efficiently review grep results before batch editing.
 
 Step-by-step:
-1. Search for a pattern: `<leader>sg` → type `TODO` → Enter
+1. Search for a pattern: `<leader>sg` → type `TODO` → `<Enter>`
 2. Send to quickfix: `<C-q>`
 3. In the quickfix window (nvim-bqf active):
    - `j`/`k` — navigate entries

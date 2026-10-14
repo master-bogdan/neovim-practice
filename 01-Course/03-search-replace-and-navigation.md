@@ -406,7 +406,7 @@ diagnostic
 
 Steps:
 
-1. While this chapter file is open, run `:cd %:p:h<Enter>` to set Neovim's working directory to the repository root.
+1. While this chapter file is open, run `:cd %:p:h:h<Enter>` to set Neovim's working directory to the repository root.
 2. Press `<leader>sg`.
 3. Type `diagnostic` and wait for results.
 4. Verify matches appear in chapter files such as `06-lsp-diagnostics-formatting.md` and `11-full-workflow-drills.md`.
@@ -458,22 +458,22 @@ Why this works: `cgn` combines "change" with "select next match". After the firs
 
 ### Scenario 12 - Batch Operations With :cdo
 
-Use `<leader>sg` to grep the real files in `drills/03-search-replace/cdo-api/`, send the results to quickfix, then run a substitute command on every quickfix entry.
+Use `<leader>sg` to grep the real files in `01-Course/practice-files/03-search-replace/cdo-api/`, send the results to quickfix, then run a substitute command on every quickfix entry.
 
 Practice files:
 
 ```text
-drills/03-search-replace/cdo-api/users.ts
+01-Course/practice-files/03-search-replace/cdo-api/users.ts
 
-drills/03-search-replace/cdo-api/rooms.ts
+01-Course/practice-files/03-search-replace/cdo-api/rooms.ts
 
-drills/03-search-replace/cdo-api/billing.ts
+01-Course/practice-files/03-search-replace/cdo-api/billing.ts
 ```
 
 Required moves:
-1. While this chapter file is open, run `:cd %:p:h<Enter>` to set the working directory to the repository root.
+1. While this chapter file is open, run `:cd %:p:h:h<Enter>` to set the working directory to the repository root.
 2. Press `<leader>sg`. In the search box, type `cdo_`, then `endpoint`, then `_v1` as one continuous search term.
-3. Verify the picker shows the three files under `drills/03-search-replace/cdo-api/`.
+3. Verify the picker shows the three files under `01-Course/practice-files/03-search-replace/cdo-api/`.
 4. Press `<Esc>` to enter picker Normal mode, then press `<C-q>` to send all three results to quickfix.
 5. Run `:copen<Enter>` to verify the quickfix entries.
 6. Run `:cdo s#/api/v1/#/api/v2/#g | update` to replace each matched endpoint and save the files.
@@ -485,13 +485,13 @@ If `<leader>sg` reports no matches, confirm Neovim’s working directory is the 
 Expected result:
 
 ```text
--- file: drills/03-search-replace/cdo-api/users.ts
+-- file: 01-Course/practice-files/03-search-replace/cdo-api/users.ts
 endpoint path becomes "/api/v2/users"
 
--- file: drills/03-search-replace/cdo-api/rooms.ts
+-- file: 01-Course/practice-files/03-search-replace/cdo-api/rooms.ts
 endpoint path becomes "/api/v2/rooms"
 
--- file: drills/03-search-replace/cdo-api/billing.ts
+-- file: 01-Course/practice-files/03-search-replace/cdo-api/billing.ts
 endpoint path becomes "/api/v2/billing"
 ```
 

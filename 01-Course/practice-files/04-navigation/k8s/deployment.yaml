@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: navigation-practice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: navigation-practice
+  template:
+    metadata:
+      labels:
+        app: navigation-practice
+    spec:
+      containers:
+        - name: api
+          image: navigation-practice-api
+          ports:
+            - containerPort: 8080

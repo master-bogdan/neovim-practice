@@ -32,4 +32,4 @@ and extracting a shared type into a new location.
 
 ## Reset
 
-To reset the drill: `git checkout -- drills/07-multifile/`
+To reset the drill: `git checkout -- 02-Daily-drills/07-multifile/`
